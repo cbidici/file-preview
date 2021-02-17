@@ -1,6 +1,8 @@
 package com.cbidici.filepreviewer.controller;
 
+import com.cbidici.filepreviewer.model.domain.ContentDomain;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
+import com.cbidici.filepreviewer.service.ContentService;
 import com.cbidici.filepreviewer.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,20 +21,20 @@ import java.util.List;
 @RequestMapping("/files")
 public class FileController {
 
-    private final FileService fileService;
+    private final ContentService contentService;
 
     @Autowired
-    public FileController(FileService fileService) {
-        this.fileService = fileService;
+    public FileController(ContentService contentService) {
+        this.contentService = contentService;
     }
 
     @GetMapping("/**")
     @ResponseBody
-    public ResponseEntity<List<FileDomain>> getFiles(HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
+    public ResponseEntity<List<ContentDomain>> getFiles(HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
         String requestURL = request.getRequestURL().toString();
         String path = requestURL.split("/files/").length == 1 ? "" : requestURL.split("/files/")[1];
 
-        return new ResponseEntity<>(fileService.getFiles(URLDecoder.decode(path, "UTF-8")), HttpStatus.OK);
+        return new ResponseEntity<>(contentService.getContents(URLDecoder.decode(path, "UTF-8")), HttpStatus.OK);
     }
 
 }

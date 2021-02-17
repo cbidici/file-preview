@@ -2,8 +2,9 @@
 file:
   repo:
     path: /media/bidici/DATA_1TB/Memo
-  thumbnails:
-    width: 200
+    thumbnail:
+      directory: thumbnails
+      width: 200
 
 ---
 spring:

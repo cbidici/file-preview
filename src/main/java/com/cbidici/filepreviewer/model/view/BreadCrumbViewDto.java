@@ -1,10 +1,10 @@
-package com.cbidici.filepreviewer.model.dto;
+package com.cbidici.filepreviewer.model.view;
 
-public class BreadCrumbDto {
+public class BreadCrumbViewDto {
     private String name;
     private String url;
 
-    public BreadCrumbDto(String name, String url) {
+    public BreadCrumbViewDto(String name, String url) {
         this.name = name;
         this.url = url;
     }

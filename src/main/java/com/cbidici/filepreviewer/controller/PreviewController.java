@@ -1,6 +1,8 @@
 package com.cbidici.filepreviewer.controller;
 
-import com.cbidici.filepreviewer.model.dto.BreadCrumbDto;
+import com.cbidici.filepreviewer.model.view.BreadCrumbViewDto;
+import com.cbidici.filepreviewer.model.view.ContentModelViewDto;
+import com.cbidici.filepreviewer.service.ContentService;
 import com.cbidici.filepreviewer.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,15 +15,16 @@ import java.net.URLDecoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PreviewController {
 
-    FileService fileService;
+    ContentService contentService;
 
     @Autowired
-    public PreviewController(FileService fileService) {
-        this.fileService = fileService;
+    public PreviewController(ContentService contentService) {
+        this.contentService = contentService;
     }
 
     @GetMapping("/")
@@ -32,22 +35,27 @@ public class PreviewController {
     @GetMapping("/gallery/**")
     public String gallery(HttpServletRequest request, Model model) throws IOException, NoSuchAlgorithmException {
         String requestURL = request.getRequestURL().toString();
-        String path = requestURL.split("/gallery").length == 1 ? "" : requestURL.split("/gallery")[1];
+        String path = requestURL.split("/gallery/").length == 1 ? "" : requestURL.split("/gallery/")[1];
 
         StringBuilder breadCrumbUrlBuilder = new StringBuilder();
         breadCrumbUrlBuilder.append("/gallery");
         String[] directories = path.split("/");
-        List<BreadCrumbDto> breadCrumbDtoList = new ArrayList<>();
-        breadCrumbDtoList.add(new BreadCrumbDto("Home", breadCrumbUrlBuilder.toString()));
+        List<BreadCrumbViewDto> breadCrumbViewDtoList = new ArrayList<>();
+        breadCrumbViewDtoList.add(new BreadCrumbViewDto("Home", breadCrumbUrlBuilder.toString()));
         for(String directory : directories) {
             if(!directory.isEmpty()) {
                 breadCrumbUrlBuilder.append("/"+URLDecoder.decode(directory));
-                breadCrumbDtoList.add(new BreadCrumbDto(URLDecoder.decode(directory,"UTF-8"), breadCrumbUrlBuilder.toString()));
+                breadCrumbViewDtoList.add(new BreadCrumbViewDto(URLDecoder.decode(directory,"UTF-8"), breadCrumbUrlBuilder.toString()));
             }
         }
 
-        model.addAttribute("breadCrumb", breadCrumbDtoList);
-        model.addAttribute("files", fileService.getFiles(URLDecoder.decode(path, "UTF-8")));
+        List<ContentModelViewDto> contents = contentService.getContents(URLDecoder.decode(path, "UTF-8"))
+                .stream()
+                .map(contentDomain -> ContentModelViewDto.fromDomain(contentDomain))
+                .collect(Collectors.toList());
+
+        model.addAttribute("breadCrumb", breadCrumbViewDtoList);
+        model.addAttribute("files", contents);
         return "gallery";
     }
 }

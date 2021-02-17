@@ -1,13 +1,12 @@
 package com.cbidici.filepreviewer.repo;
 
-import com.cbidici.filepreviewer.model.domain.FileDomain;
+import com.cbidici.filepreviewer.model.entity.FileEntity;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
+import java.awt.image.BufferedImage;
 
 public interface FileRepo {
-
-    List<FileDomain> getFiles(String path) throws IOException, NoSuchAlgorithmException;
-
+    FileEntity getFile(String relativeFilePathStr);
+    String getThumbnailPath(String relativeFilePathStr);
+    String getAbsolutePathOf(String relativePath);
+    void writeToFile(String targetFilePath, BufferedImage bufferedImage);
 }
