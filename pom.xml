@@ -14,7 +14,7 @@
 	<name>multimedia-service</name>
 	<description>Premature multimedia service for home usage to serve media files from storage.</description>
 	<properties>
-		<java.version>15</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -43,6 +43,12 @@
 			<groupId>com.twelvemonkeys.imageio</groupId>
 			<artifactId>imageio-jpeg</artifactId>
 			<version>3.6.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.4</version>
 		</dependency>
 
 		<dependency>

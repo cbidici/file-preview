@@ -1,4 +1,4 @@
-package com.cbidici.filepreviewer.service.impl;
+package com.cbidici.filepreviewer.service.impl.thumbnail;
 
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.enm.FileType;

@@ -6,7 +6,8 @@ import java.util.Map;
 public enum FileType {
     DIRECTORY("directory"),
     IMAGE_TIFF("image/tiff"),
-    IMAGE_JPEG("image/jpeg");
+    IMAGE_JPEG("image/jpeg"),
+    VIDEO_MP4("video/mp4");
 
     private static final Map<String, FileType> lookup = new HashMap<String, FileType>();
     private final String name;

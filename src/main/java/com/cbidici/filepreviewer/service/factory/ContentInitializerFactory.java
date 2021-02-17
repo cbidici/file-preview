@@ -1,12 +1,9 @@
 package com.cbidici.filepreviewer.service.factory;
 
 import com.cbidici.filepreviewer.service.chain.ContentInitializer;
-import com.cbidici.filepreviewer.service.chain.FileInitializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 @Service
 public class ContentInitializerFactory implements InitializingBean {
