@@ -15,9 +15,11 @@ public abstract class ThumbnailService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThumbnailService.class);
 
+    protected int thumbnailWidth;
     protected FileService fileService;
 
-    public ThumbnailService(FileService fileService) {
+    public ThumbnailService(int thumbnailWidth, FileService fileService) {
+        this.thumbnailWidth = thumbnailWidth;
         this.fileService = fileService;
     }
 

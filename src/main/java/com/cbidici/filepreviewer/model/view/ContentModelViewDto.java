@@ -5,6 +5,8 @@ import com.cbidici.filepreviewer.model.enm.FileType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.File;
+
 @Getter
 @Builder
 public class ContentModelViewDto {
@@ -15,12 +17,20 @@ public class ContentModelViewDto {
     private final String thumbUrl;
 
     public static ContentModelViewDto fromDomain(ContentDomain content){
+        String type = "directory";
+        if(content.getFile().getType() == FileType.IMAGE_JPEG) {
+            type = "image";
+        }
+        else if(content.getFile().getType() == FileType.VIDEO_MP4) {
+            type = "video";
+        }
+
         return builder()
                 .name(content.getFile().getName())
                 .relativePath(content.getFile().getDirectoryPath())
-                .type(content.getFile().getType() == FileType.DIRECTORY ? "directory" : "file")
+                .type(type)
                 .url((content.getFile().getType() == FileType.DIRECTORY ? "" : "/resources/") + content.getFile().getPath())
-                .thumbUrl("/resources/"+(content.getThumbnail() == null ? "" : content.getThumbnail().getFile().getPath()))
+                .thumbUrl("/resources/"+(content.getThumbnail() == null || content.getThumbnail().getFile() == null ? "" : content.getThumbnail().getFile().getPath()))
                 .build();
     }
 }

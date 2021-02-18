@@ -5,7 +5,6 @@ import java.util.Map;
 
 public enum FileType {
     DIRECTORY("directory"),
-    IMAGE_TIFF("image/tiff"),
     IMAGE_JPEG("image/jpeg"),
     VIDEO_MP4("video/mp4");
 
