@@ -8,7 +8,7 @@ public abstract class ContentInitializer {
 
     protected ContentInitializer nextInitializer;
 
-    public void process(ContentDomain contentDomain) throws IOException {
+    public void process(ContentDomain contentDomain) {
         this.initialize(contentDomain);
 
         if(this.nextInitializer != null) {
@@ -20,5 +20,5 @@ public abstract class ContentInitializer {
         this.nextInitializer = nextInitializer;
     }
 
-    protected abstract void initialize(ContentDomain contentDomain) throws IOException;
+    protected abstract void initialize(ContentDomain contentDomain);
 }

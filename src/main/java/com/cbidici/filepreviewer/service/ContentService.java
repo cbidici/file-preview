@@ -7,5 +7,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface ContentService {
-    List<ContentDomain> getContents(String relativePathStr) throws IOException;
+    List<ContentDomain> getContents(String path);
+    ContentDomain getContent(String path);
 }

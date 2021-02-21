@@ -24,7 +24,7 @@ public class DefaultContentService implements ContentService {
     }
 
     @Override
-    public List<ContentDomain> getContents(String path) throws IOException {
+    public List<ContentDomain> getContents(String path) {
         List<ContentDomain> contents = new ArrayList<>();
         List<String> filePaths = directoryService.getFilePaths(path);
 
@@ -35,5 +35,12 @@ public class DefaultContentService implements ContentService {
         }
 
         return contents;
+    }
+
+    @Override
+    public ContentDomain getContent(String path) {
+        ContentDomain content = new ContentDomain(path);
+        contentInitializerFactory.getOptimizedContentInitializerChain().process(content);
+        return content;
     }
 }

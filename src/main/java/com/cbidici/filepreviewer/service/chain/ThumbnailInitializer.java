@@ -6,9 +6,11 @@ import com.cbidici.filepreviewer.service.factory.ThumbnailServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class ThumbnailInitializer extends ContentInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThumbnailInitializer.class);

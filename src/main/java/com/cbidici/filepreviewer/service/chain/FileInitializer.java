@@ -3,11 +3,11 @@ package com.cbidici.filepreviewer.service.chain;
 import com.cbidici.filepreviewer.model.domain.ContentDomain;
 import com.cbidici.filepreviewer.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Service
+@Scope("prototype")
 public class FileInitializer extends ContentInitializer {
 
     private final FileService fileService;
@@ -18,7 +18,7 @@ public class FileInitializer extends ContentInitializer {
     }
 
     @Override
-    protected void initialize(ContentDomain content) throws IOException {
+    protected void initialize(ContentDomain content) {
         content.injectFile(fileService.getFile(content.getPath()));
     }
 }
