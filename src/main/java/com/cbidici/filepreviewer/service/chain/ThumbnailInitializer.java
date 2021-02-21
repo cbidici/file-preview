@@ -1,8 +1,6 @@
 package com.cbidici.filepreviewer.service.chain;
 
 import com.cbidici.filepreviewer.model.domain.ContentDomain;
-import com.cbidici.filepreviewer.model.domain.FileDomain;
-import com.cbidici.filepreviewer.model.enm.FileType;
 import com.cbidici.filepreviewer.service.ThumbnailService;
 import com.cbidici.filepreviewer.service.factory.ThumbnailServiceFactory;
 import org.slf4j.Logger;
@@ -15,7 +13,7 @@ public class ThumbnailInitializer extends ContentInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThumbnailInitializer.class);
 
-    private ThumbnailServiceFactory thumbnailServiceFactory;
+    private final ThumbnailServiceFactory thumbnailServiceFactory;
 
     @Autowired
     public ThumbnailInitializer(ThumbnailServiceFactory thumbnailServiceFactory) {
@@ -24,7 +22,7 @@ public class ThumbnailInitializer extends ContentInitializer {
 
     @Override
     protected void initialize(ContentDomain content) {
-        if(!isFile(content.getFile())) {
+        if(!content.hasFile()) {
             return;
         }
 
@@ -35,17 +33,5 @@ public class ThumbnailInitializer extends ContentInitializer {
         }
 
         content.injectThumbnail(thumbnailService.getThumbnail(content.getPath()));
-    }
-
-    private boolean isFile(FileDomain file){
-        if (file == null) {
-            return false;
-        }
-
-        if (file.getType() == FileType.DIRECTORY) {
-            return false;
-        }
-
-        return true;
     }
 }

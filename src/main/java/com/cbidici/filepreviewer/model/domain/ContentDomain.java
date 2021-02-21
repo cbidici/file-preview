@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.model.domain;
 
+import com.cbidici.filepreviewer.model.enm.FileType;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ public class ContentDomain {
     private FileDomain file;
     private ThumbnailDomain thumbnail;
     private UrlDomain url;
+    private OptimizedDomain optimized;
 
     public ContentDomain(String path) {
         this.path = path;
@@ -33,5 +35,23 @@ public class ContentDomain {
         if(this.url == null) {
             this.url = url;
         }
+    }
+
+    public void injectOptimized(OptimizedDomain optimized) {
+        if (this.optimized == null) {
+            this.optimized = optimized;
+        }
+    }
+
+    public boolean hasFile(){
+        if (this.file == null) {
+            return false;
+        }
+
+        if (this.file.getType() == FileType.DIRECTORY) {
+            return false;
+        }
+
+        return true;
     }
 }

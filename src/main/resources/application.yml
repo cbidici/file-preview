@@ -1,10 +1,13 @@
 
 file:
   repo:
-    path: /media/bidici/DATA_1TB/Memo
+    path: e:\\\foto
     thumbnail:
       directory: thumbnails
       width: 200
+    optimized:
+      directory: optimized
+      width: 512, 1024, 2048
 
 ---
 spring:

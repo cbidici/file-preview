@@ -10,6 +10,7 @@ public class ContentInitializerFactory implements InitializingBean {
 
     private ContentInitializer fileInitializer;
     private ContentInitializer thumbnailInitializer;
+    private ContentInitializer optimizedInitializer;
 
     public ContentInitializer getContentInitializerChain(){
         return fileInitializer;
@@ -25,8 +26,14 @@ public class ContentInitializerFactory implements InitializingBean {
         this.thumbnailInitializer = thumbnailInitializer;
     }
 
+    @Autowired
+    public void setOptimizedInitializer(ContentInitializer optimizedInitializer) {
+        this.optimizedInitializer = optimizedInitializer;
+    }
+
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         this.fileInitializer.setNextProcessor(this.thumbnailInitializer);
+        this.thumbnailInitializer.setNextProcessor(this.optimizedInitializer);
     }
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class AppConfig {
 
@@ -15,6 +17,12 @@ public class AppConfig {
 
     @Value("${file.repo.thumbnail.width}")
     private int thumbnailWidth;
+
+    @Value("${file.repo.optimized.directory}")
+    private String optimizedDirectoryName;
+
+    @Value("${file.repo.optimized.width}")
+    private List<Integer> optimizedWidths;
 
     @Bean
     public String rootDirectoryPath(){
@@ -29,5 +37,15 @@ public class AppConfig {
     @Bean
     public int thumbnailWidth() {
         return this.thumbnailWidth;
+    }
+
+    @Bean
+    public String optimizedDirectoryName() {
+        return optimizedDirectoryName;
+    }
+
+    @Bean
+    public List<Integer> optimizedWidths() {
+        return optimizedWidths;
     }
 }

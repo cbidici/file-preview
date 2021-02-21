@@ -26,7 +26,7 @@ public class ThumbnailServiceFactory implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         thumbnailServiceList.forEach(
                 thumbnailService -> thumbnailService.getSupportedTypes().forEach(
                         fileType -> thumbnailServiceMap.put(fileType, thumbnailService)
