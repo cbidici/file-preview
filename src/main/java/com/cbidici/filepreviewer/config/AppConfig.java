@@ -34,7 +34,7 @@ public class AppConfig {
         return this.thumbnailDirectoryName;
     }
 
-    @Bean
+    @Bean(name = "thumbnailWidth")
     public int thumbnailWidth() {
         return this.thumbnailWidth;
     }
@@ -44,7 +44,7 @@ public class AppConfig {
         return optimizedDirectoryName;
     }
 
-    @Bean
+    @Bean(name = "optimizedWidths")
     public List<Integer> optimizedWidths() {
         return optimizedWidths;
     }

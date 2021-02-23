@@ -50,6 +50,6 @@ public abstract class ThumbnailService {
         return result;
     }
 
-    public abstract BufferedImage generateThumbnail(String sourceFilePath);
+    public abstract BufferedImage generateThumbnail(String path);
     public abstract Set<FileType> getSupportedTypes();
 }

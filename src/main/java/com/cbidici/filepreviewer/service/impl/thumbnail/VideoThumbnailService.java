@@ -33,6 +33,6 @@ public class VideoThumbnailService extends ThumbnailService {
 
     @Override
     public Set<FileType> getSupportedTypes() {
-        return Set.of(FileType.VIDEO_MP4);
+        return Set.of(FileType.VIDEO_MP4, FileType.VIDEO_QUICKTIME);
     }
 }

@@ -15,6 +15,8 @@ public interface FileService {
 
     String getThumbnailPath(String path);
 
+    String getOptimizedPath(String path, Integer optimizedWidth);
+
     String getAbsolutePathOf(String path);
 
     void writeToFile(String targetFilePath, BufferedImage bufferedImage);

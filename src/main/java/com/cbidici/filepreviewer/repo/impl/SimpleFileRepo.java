@@ -22,11 +22,13 @@ public class SimpleFileRepo implements FileRepo {
 
     private Path rootDirectoryPath;
     private String thumbnailDirectoryName;
+    private String optimizedDirectoryName;
 
     @Autowired
-    public SimpleFileRepo(String rootDirectoryPath, String thumbnailDirectoryName) {
+    public SimpleFileRepo(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName) {
         this.rootDirectoryPath = Path.of(rootDirectoryPath);
         this.thumbnailDirectoryName = thumbnailDirectoryName;
+        this.optimizedDirectoryName = optimizedDirectoryName;
     }
 
     @Override
@@ -52,6 +54,29 @@ public class SimpleFileRepo implements FileRepo {
         }
     }
 
+    @Override
+    public String getOptimizedPath(String relativeFilePathStr, Integer optimizedWidth) {
+        // TODO : Move directory ops to DirectoryRepo
+        Path relativeFilePath = Path.of(relativeFilePathStr);
+        String optimizedSubDirectoryName = generateThumbnailSubDirectoryName(relativeFilePath.getParent());
+        Path optimizedDirectoryRelativePath = Path.of(optimizedDirectoryName).resolve(optimizedSubDirectoryName);
+        Path absoluteOptimizedDirectoryPath = rootDirectoryPath.resolve(optimizedDirectoryRelativePath);
+
+        if(!absoluteOptimizedDirectoryPath.toFile().exists()) {
+            try {
+                Files.createDirectories(absoluteOptimizedDirectoryPath);
+            } catch (IOException e) {
+                throw new MultimediaServiceBusinessException(e);
+            }
+        }
+
+        String fileName = relativeFilePath.getFileName().toString();
+        String extension = fileName.substring(fileName.lastIndexOf('.'));
+        String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+        String optimizedFileName = fileNameWithoutExtension + "_" + optimizedWidth + extension;
+
+        return optimizedDirectoryRelativePath.resolve(optimizedFileName).toString();
+    }
 
     @Override
     public String getThumbnailPath(String relativeFilePathStr) {

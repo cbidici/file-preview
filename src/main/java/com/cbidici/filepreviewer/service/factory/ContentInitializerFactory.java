@@ -29,12 +29,10 @@ public class ContentInitializerFactory {
     public ContentInitializer getOptimizedContentInitializerChain() {
         ContentInitializer fileInitializer = applicationContext.getBean(FileInitializer.class);
         ContentInitializer thumbnailInitializer = applicationContext.getBean(ThumbnailInitializer.class);
-        ContentInitializer optimizedGenerator = applicationContext.getBean(OptimizedGenerator.class);
         ContentInitializer optimizedInitializer = applicationContext.getBean(OptimizedInitializer.class);
 
         fileInitializer.setNextProcessor(thumbnailInitializer);
-        thumbnailInitializer.setNextProcessor(optimizedGenerator);
-        optimizedGenerator.setNextProcessor(optimizedInitializer);
+        thumbnailInitializer.setNextProcessor(optimizedInitializer);
         return fileInitializer;
     }
 

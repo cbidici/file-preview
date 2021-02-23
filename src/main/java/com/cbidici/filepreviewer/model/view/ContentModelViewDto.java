@@ -18,10 +18,10 @@ public class ContentModelViewDto {
 
     public static ContentModelViewDto fromDomain(ContentDomain content){
         String type = "directory";
-        if(content.getFile().getType() == FileType.IMAGE_JPEG) {
+        if(content.getFile().getType().getName().startsWith("image")) {
             type = "image";
         }
-        else if(content.getFile().getType() == FileType.VIDEO_MP4) {
+        else if(content.getFile().getType().getName().startsWith("video")) {
             type = "video";
         }
 

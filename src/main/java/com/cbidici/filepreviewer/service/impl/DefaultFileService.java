@@ -32,6 +32,11 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
+    public String getOptimizedPath(String filePath, Integer optimizedWidth) {
+        return fileRepo.getOptimizedPath(filePath, optimizedWidth);
+    }
+
+    @Override
     public String getAbsolutePathOf(String path) {
         return fileRepo.getAbsolutePathOf(path);
     }

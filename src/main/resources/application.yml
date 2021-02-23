@@ -7,7 +7,7 @@ file:
       width: 200
     optimized:
       directory: optimized
-      width: 512, 1024, 2048
+      width: 426, 854, 1920
 
 ---
 spring:
