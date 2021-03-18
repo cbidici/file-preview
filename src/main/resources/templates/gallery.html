@@ -285,6 +285,12 @@
             modal.find('#caption').attr("href", imageUrl)
             modal.find('#caption').attr("download", imageName)
         })
+
+        $('#videoModal').on('hidden.bs.modal', function () {
+            var modal = $(this)
+            modal.find('video')[0].pause();
+            modal.find('video')[0].currentTime=0;
+        })
     </script>
 
 </main>

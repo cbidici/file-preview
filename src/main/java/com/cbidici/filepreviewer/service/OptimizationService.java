@@ -5,9 +5,7 @@ import com.cbidici.filepreviewer.model.domain.FileDomain;
 import com.cbidici.filepreviewer.model.domain.OptimizedDomain;
 import com.cbidici.filepreviewer.model.enm.FileType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class OptimizationService {
 
@@ -19,8 +17,8 @@ public abstract class OptimizationService {
         this.fileService = fileService;
     }
 
-    public OptimizedDomain getOptimized(String path)  {
-        List<FileDomain> optimizedFiles = new ArrayList<>();
+    public List<OptimizedDomain> getOptimized(String path)  {
+        List<OptimizedDomain> optimizedList = new ArrayList<>();
         for(Integer optimizedWidth : optimizedWidths) {
             String optimizedPath = fileService.getOptimizedPath(path, optimizedWidth);
 
@@ -31,10 +29,10 @@ public abstract class OptimizationService {
                 optimizedFile = generateAndSaveOptimized(path, optimizedPath, optimizedWidth);
             }
 
-            optimizedFiles.add(optimizedFile);
+            optimizedList.add(OptimizedDomain.builder().size(optimizedWidth).file(optimizedFile).build());
         }
 
-        return OptimizedDomain.builder().files(optimizedFiles).build();
+        return optimizedList;
     }
 
     protected abstract FileDomain generateAndSaveOptimized(String sourceFilePath, String targetFilePath, Integer optimizedWidth);

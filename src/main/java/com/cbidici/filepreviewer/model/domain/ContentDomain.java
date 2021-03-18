@@ -4,6 +4,8 @@ import com.cbidici.filepreviewer.model.enm.FileType;
 import lombok.Getter;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class ContentDomain {
@@ -13,7 +15,7 @@ public class ContentDomain {
     private FileDomain file;
     private ThumbnailDomain thumbnail;
     private UrlDomain url;
-    private OptimizedDomain optimized;
+    private List<OptimizedDomain> optimized;
 
     public ContentDomain(String path) {
         this.path = path;
@@ -37,7 +39,7 @@ public class ContentDomain {
         }
     }
 
-    public void injectOptimized(OptimizedDomain optimized) {
+    public void injectOptimized(List<OptimizedDomain> optimized) {
         if (this.optimized == null) {
             this.optimized = optimized;
         }
