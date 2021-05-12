@@ -39,6 +39,6 @@ public class ImageThumbnailService extends ThumbnailService {
 
     @Override
     public Set<FileType> getSupportedTypes() {
-        return Set.of(FileType.IMAGE_JPEG);
+        return Set.of(FileType.IMAGE_JPEG, FileType.IMAGE_PNG);
     }
 }

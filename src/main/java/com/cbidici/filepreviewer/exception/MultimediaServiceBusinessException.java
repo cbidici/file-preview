@@ -5,6 +5,10 @@ public class MultimediaServiceBusinessException extends RuntimeException{
         super();
     }
 
+    public MultimediaServiceBusinessException(String message) {
+        super(message);
+    }
+
     public MultimediaServiceBusinessException(Throwable t) {
         super(t);
     }

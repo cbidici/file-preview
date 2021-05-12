@@ -37,7 +37,9 @@ public class SimpleDirectoryRepo implements DirectoryRepo {
         }
 
         for(File file : directory.listFiles()) {
-            filePaths.add(relativeDirectoryPath.resolve(file.getName()).toString());
+            if(!file.getName().startsWith(".")) {
+                filePaths.add(relativeDirectoryPath.resolve(file.getName()).toString());
+            }
         }
 
         return filePaths;

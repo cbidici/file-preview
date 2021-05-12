@@ -6,6 +6,7 @@ import java.util.Map;
 public enum FileType {
     DIRECTORY("directory"),
     IMAGE_JPEG("image/jpeg"),
+    IMAGE_PNG("image/png"),
     VIDEO_MP4("video/mp4"),
     VIDEO_QUICKTIME("video/quicktime");
 

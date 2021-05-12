@@ -42,12 +42,18 @@ public class SimpleFileRepo implements FileRepo {
 
         try {
             FileType type = FileType.getByName(Files.probeContentType(file.toPath()));
+            if(file.isDirectory()) {
+                type = FileType.DIRECTORY;
+            }
+            if(null == type) {
+                throw new MultimediaServiceBusinessException("File " + file.toPath() + " not supported.");
+            }
 
             return FileEntity.builder()
                     .name(file.getName())
                     .path(relativeFilePathStr)
                     .directoryPath(file.isDirectory() ? "" : relativeFilePath.getParent().toString())
-                    .type(file.isDirectory() ? FileType.DIRECTORY : type)
+                    .type(type)
                     .build();
         } catch (IOException e) {
             throw new MultimediaServiceBusinessException(e);
@@ -105,9 +111,9 @@ public class SimpleFileRepo implements FileRepo {
     @Override
     public void writeToFile(String targetFilePath, BufferedImage bufferedImage) {
         try {
+            String extension = targetFilePath.substring(targetFilePath.lastIndexOf(".")+1);
             File outputFile = rootDirectoryPath.resolve(targetFilePath).toFile();
-            // TODO magic jpeg
-            ImageIO.write(bufferedImage, "jpeg", outputFile);
+            ImageIO.write(bufferedImage, extension, outputFile);
         } catch (Exception e) {
             throw new MultimediaServiceBusinessException(e);
         }
