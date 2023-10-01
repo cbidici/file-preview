@@ -1,5 +1,8 @@
 package com.cbidici.filepreviewer.service.impl.thumbnail;
 
+import com.cbidici.filepreviewer.exception.FileEntityNotFoundException;
+import com.cbidici.filepreviewer.model.domain.FileDomain;
+import com.cbidici.filepreviewer.model.domain.ThumbnailDomain;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Set;
@@ -23,6 +26,19 @@ public class VideoThumbnailService extends ThumbnailService {
         super(thumbnailWidth, fileService);
         this.videoService = videoService;
         this.imageService = imageService;
+    }
+
+    @Override
+    public ThumbnailDomain getThumbnail(String path)  {
+        String thumbnailPath = fileService.getThumbnailPath(path)+".jpg";
+        FileDomain thumbnailFile;
+        try {
+            thumbnailFile = fileService.getFile(thumbnailPath);
+        } catch (FileEntityNotFoundException e) {
+            thumbnailFile = generateAndSaveThumbnail(path, thumbnailPath);
+        }
+
+        return ThumbnailDomain.builder().file(thumbnailFile).build();
     }
 
     @Override

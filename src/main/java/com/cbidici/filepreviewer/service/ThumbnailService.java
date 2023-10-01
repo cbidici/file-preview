@@ -25,7 +25,6 @@ public abstract class ThumbnailService {
 
     public ThumbnailDomain getThumbnail(String path)  {
         String thumbnailPath = fileService.getThumbnailPath(path);
-
         FileDomain thumbnailFile;
         try {
             thumbnailFile = fileService.getFile(thumbnailPath);
@@ -36,7 +35,7 @@ public abstract class ThumbnailService {
         return ThumbnailDomain.builder().file(thumbnailFile).build();
     }
 
-    private FileDomain generateAndSaveThumbnail(String sourceFilePath, String targetFilePath){
+    protected FileDomain generateAndSaveThumbnail(String sourceFilePath, String targetFilePath){
         FileDomain result = null;
 
         try{

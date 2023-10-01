@@ -20,9 +20,9 @@ import java.nio.file.Path;
 @Component
 public class SimpleFileRepo implements FileRepo {
 
-    private Path rootDirectoryPath;
-    private String thumbnailDirectoryName;
-    private String optimizedDirectoryName;
+    private final Path rootDirectoryPath;
+    private final String thumbnailDirectoryName;
+    private final String optimizedDirectoryName;
 
     @Autowired
     public SimpleFileRepo(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName) {
@@ -41,12 +41,15 @@ public class SimpleFileRepo implements FileRepo {
         }
 
         try {
-            FileType type = FileType.getByName(Files.probeContentType(file.toPath()));
+            String fileTypeName = Files.probeContentType(file.toPath());
+            FileType type = FileType.getByName(fileTypeName);
             if(file.isDirectory()) {
                 type = FileType.DIRECTORY;
             }
             if(null == type) {
-                throw new MultimediaServiceBusinessException("File " + file.toPath() + " not supported.");
+                throw new MultimediaServiceBusinessException(
+                    String.format("Unsupported file %s with type name %s", file.getPath(), fileTypeName)
+                );
             }
 
             return FileEntity.builder()

@@ -202,7 +202,14 @@
                             </svg>
                         </a>
                     </div>
-                    <div th:if="${file.type} == 'image'" class="card img_container shadow-sm">
+                    <div th:if="${file.type} == 'image' and ${!file.optimizedUrls.isEmpty()}" class="card img_container shadow-sm">
+                        <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-url="${file.optimizedUrls.get(2).url}">
+                            <div class="image">
+                                <img th:src="@{${file.thumbUrl}}" class="img img-responsive full-width" />
+                            </div>
+                        </button>
+                    </div>
+                    <div th:if="${file.type} == 'image' and ${file.optimizedUrls.isEmpty()}" class="card img_container shadow-sm">
                         <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-url="${file.url}">
                             <div class="image">
                                 <img th:src="@{${file.thumbUrl}}" class="img img-responsive full-width" />
