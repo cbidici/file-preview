@@ -5,7 +5,6 @@ import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.enm.FileType;
 import com.cbidici.filepreviewer.model.entity.FileEntity;
 import com.cbidici.filepreviewer.repo.FileRepo;
-import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -124,6 +122,6 @@ public class SimpleFileRepo implements FileRepo {
     }
 
     private String generateThumbnailSubDirectoryName(Path relativeFilePath) {
-        return Hashing.sha256().hashString(relativeFilePath.toString(), StandardCharsets.UTF_8).toString();
+        return relativeFilePath.toString();
     }
 }

@@ -1,13 +1,13 @@
 
 file:
   repo:
-    path: e:\\\foto
+    path: /Users/cbidici/Desktop/calis
     thumbnail:
       directory: thumbnails
       width: 200
     optimized:
       directory: optimized
-      width: 426, 854, 1920
+      width: 854
 
 ---
 spring:

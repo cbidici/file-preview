@@ -22,27 +22,28 @@ public class DefaultVideoService implements VideoService {
     @Override
     public BufferedImage getFirstFrame(File file) {
         BufferedImage result;
-        try{
-            FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file);
+        try(FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file)) {
             grabber.setFormat("mp4");
             grabber.start();
-
-            Frame frame = grabber.grabImage();
-
-            OpenCVFrameConverter.ToIplImage ocvConverter = new OpenCVFrameConverter.ToIplImage();
-            IplImage grabbedImage = ocvConverter.convertToIplImage(frame);
-            IplImage rotatedImage = rotate(grabbedImage, Integer.parseInt(Optional.ofNullable(grabber.getVideoMetadata("rotate")).orElse("0")));
-
-            Java2DFrameConverter j2converter = new Java2DFrameConverter();
-            result = j2converter.getBufferedImage(ocvConverter.convert(rotatedImage));
-            grabbedImage.release();
-            rotatedImage.release();
-            grabber.release();
-            grabber.stop();
+            try(
+                Frame frame = grabber.grabImage();
+                OpenCVFrameConverter.ToIplImage ocvConverter = new OpenCVFrameConverter.ToIplImage();
+                IplImage grabbedImage = ocvConverter.convertToIplImage(frame);
+                IplImage rotatedImage = rotate(grabbedImage, getRotate(grabber));
+                Java2DFrameConverter j2converter = new Java2DFrameConverter()
+            ) {
+                result = j2converter.getBufferedImage(ocvConverter.convert(rotatedImage));
+            }
         } catch (Exception e){
             throw new MultimediaServiceBusinessException(e);
         }
         return result;
+    }
+
+    private int getRotate(FFmpegFrameGrabber grabber) {
+        return Optional.ofNullable(grabber.getVideoMetadata("rotate"))
+            .map(Integer::parseInt)
+            .orElse(Double.valueOf(grabber.getDisplayRotation()).intValue() * -1);
     }
 
     public IplImage rotate(IplImage src, int angle) {

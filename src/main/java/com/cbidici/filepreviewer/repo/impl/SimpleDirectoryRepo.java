@@ -1,16 +1,11 @@
 package com.cbidici.filepreviewer.repo.impl;
 
-import com.cbidici.filepreviewer.model.enm.FileType;
-import com.cbidici.filepreviewer.model.entity.FileEntity;
 import com.cbidici.filepreviewer.repo.DirectoryRepo;
-import com.google.common.hash.Hashing;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +13,15 @@ import java.util.List;
 @Component
 public class SimpleDirectoryRepo implements DirectoryRepo {
 
-    private Path rootDirectoryPath;
+    private final Path rootDirectoryPath;
+    private final Path thumbnailDirectoryPath;
+    private final Path optimizedDirectoryPath;
 
     @Autowired
-    public SimpleDirectoryRepo(String rootDirectoryPath) {
+    public SimpleDirectoryRepo(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName) {
         this.rootDirectoryPath = Path.of(rootDirectoryPath);
+        this.thumbnailDirectoryPath = this.rootDirectoryPath.resolve(thumbnailDirectoryName);
+        this.optimizedDirectoryPath = this.rootDirectoryPath.resolve(optimizedDirectoryName);
     }
 
     @Override
@@ -36,8 +35,10 @@ public class SimpleDirectoryRepo implements DirectoryRepo {
             return filePaths;
         }
 
-        for(File file : directory.listFiles()) {
-            if(!file.getName().startsWith(".")) {
+        for(File file : Objects.requireNonNull(directory.listFiles())) {
+            if(!file.getName().startsWith(".")
+                && !file.getPath().equals(thumbnailDirectoryPath.toString())
+                && !file.getPath().equals(optimizedDirectoryPath.toString())) {
                 filePaths.add(relativeDirectoryPath.resolve(file.getName()).toString());
             }
         }

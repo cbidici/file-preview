@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URLDecoder;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Controller
@@ -28,7 +26,7 @@ public class FileController {
 
     @GetMapping("/**")
     @ResponseBody
-    public ResponseEntity<List<ContentDomain>> getFiles(HttpServletRequest request) throws IOException {
+    public ResponseEntity<List<ContentDomain>> getFiles(HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
         String path = requestURL.split("/files/").length == 1 ? "" : requestURL.split("/files/")[1];
 
