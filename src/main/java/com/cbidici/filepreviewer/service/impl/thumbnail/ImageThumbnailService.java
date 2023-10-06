@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service.impl.thumbnail;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +22,8 @@ public class ImageThumbnailService extends ThumbnailService {
     private final ImageService imageService;
 
     @Autowired
-    public ImageThumbnailService(int thumbnailWidth, FileService fileService, ImageService imageService) {
-        super(thumbnailWidth, fileService);
+    public ImageThumbnailService(AppConfig appConfig, FileService fileService, ImageService imageService) {
+        super(appConfig.getThumbnailWidth(), fileService);
         this.imageService = imageService;
     }
 
@@ -39,6 +40,6 @@ public class ImageThumbnailService extends ThumbnailService {
 
     @Override
     public Set<FileType> getSupportedTypes() {
-        return Set.of(FileType.IMAGE_JPEG, FileType.IMAGE_PNG);
+        return Set.of();
     }
 }

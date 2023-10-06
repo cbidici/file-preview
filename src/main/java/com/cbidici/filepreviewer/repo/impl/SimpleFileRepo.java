@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.repo.impl;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.FileEntityNotFoundException;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.enm.FileType;
@@ -23,10 +24,10 @@ public class SimpleFileRepo implements FileRepo {
     private final String optimizedDirectoryName;
 
     @Autowired
-    public SimpleFileRepo(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName) {
-        this.rootDirectoryPath = Path.of(rootDirectoryPath);
-        this.thumbnailDirectoryName = thumbnailDirectoryName;
-        this.optimizedDirectoryName = optimizedDirectoryName;
+    public SimpleFileRepo(AppConfig appConfig) {
+        this.rootDirectoryPath = Path.of(appConfig.getImagePath());
+        this.thumbnailDirectoryName = appConfig.getThumbnailDirectory();
+        this.optimizedDirectoryName = appConfig.getOptimizedDirectory();
     }
 
     @Override

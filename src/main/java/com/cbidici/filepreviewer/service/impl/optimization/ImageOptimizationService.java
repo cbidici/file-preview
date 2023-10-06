@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service.impl.optimization;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
 import com.cbidici.filepreviewer.model.enm.FileType;
@@ -27,8 +28,8 @@ public class ImageOptimizationService extends OptimizationService {
     private final ImageService imageService;
 
     @Autowired
-    public ImageOptimizationService(@Qualifier("optimizedWidths") List<Integer> optimizedWidths, FileService fileService, ImageService imageService) {
-        super(optimizedWidths, fileService);
+    public ImageOptimizationService(AppConfig appConfig, FileService fileService, ImageService imageService) {
+        super(appConfig.getOptimizedWidths(), fileService);
         this.imageService = imageService;
     }
 

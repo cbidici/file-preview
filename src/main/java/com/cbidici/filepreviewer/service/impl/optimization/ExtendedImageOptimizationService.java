@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service.impl.optimization;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.FileEntityNotFoundException;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
@@ -34,8 +35,8 @@ public class ExtendedImageOptimizationService extends OptimizationService {
     private static final Logger LOG = LoggerFactory.getLogger(ExtendedImageOptimizationService.class);
 
     @Autowired
-    public ExtendedImageOptimizationService(@Qualifier("optimizedWidths") List<Integer> optimizedWidths, FileService fileService) {
-        super(optimizedWidths, fileService);
+    public ExtendedImageOptimizationService(AppConfig appConfig, FileService fileService) {
+        super(appConfig.getOptimizedWidths(), fileService);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service.impl.thumbnail;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.FileEntityNotFoundException;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
@@ -29,8 +30,8 @@ public class ExtendedImageThumbnailService extends ThumbnailService {
   private final Dimension dimension;
 
   @Autowired
-  public ExtendedImageThumbnailService(int thumbnailWidth, FileService fileService) {
-    super(thumbnailWidth, fileService);
+  public ExtendedImageThumbnailService(AppConfig appConfig, FileService fileService) {
+    super(appConfig.getThumbnailWidth(), fileService);
     dimension = new Dimension(thumbnailWidth, thumbnailWidth);
   }
 

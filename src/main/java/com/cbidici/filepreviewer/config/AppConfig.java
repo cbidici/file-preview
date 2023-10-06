@@ -1,51 +1,17 @@
 package com.cbidici.filepreviewer.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import java.util.List;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 @Configuration
+@ConfigurationProperties(prefix = "app.multimedia-service")
+@Data
 public class AppConfig {
-
-    @Value("${file.repo.path}")
-    private String rootDirectoryPath;
-
-    @Value("${file.repo.thumbnail.directory}")
-    private String thumbnailDirectoryName;
-
-    @Value("${file.repo.thumbnail.width}")
+    private String imagePath;
+    private String thumbnailDirectory;
     private int thumbnailWidth;
-
-    @Value("${file.repo.optimized.directory}")
-    private String optimizedDirectoryName;
-
-    @Value("${file.repo.optimized.width}")
+    private String optimizedDirectory;
     private List<Integer> optimizedWidths;
-
-    @Bean
-    public String rootDirectoryPath(){
-        return this.rootDirectoryPath;
-    }
-
-    @Bean
-    public String thumbnailDirectoryName() {
-        return this.thumbnailDirectoryName;
-    }
-
-    @Bean(name = "thumbnailWidth")
-    public int thumbnailWidth() {
-        return this.thumbnailWidth;
-    }
-
-    @Bean
-    public String optimizedDirectoryName() {
-        return optimizedDirectoryName;
-    }
-
-    @Bean(name = "optimizedWidths")
-    public List<Integer> optimizedWidths() {
-        return optimizedWidths;
-    }
 }

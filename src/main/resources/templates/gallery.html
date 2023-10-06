@@ -203,21 +203,21 @@
                         </a>
                     </div>
                     <div th:if="${file.type} == 'image' and ${!file.optimizedUrls.isEmpty()}" class="card img_container shadow-sm">
-                        <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-url="${file.optimizedUrls.get(0).url}">
+                        <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-optimized-url="${file.optimizedUrls.get(0).url}" th:data-image-url="${file.url}">
                             <div class="image">
                                 <img th:src="@{${file.thumbUrl}}" class="img img-responsive full-width" />
                             </div>
                         </button>
                     </div>
                     <div th:if="${file.type} == 'image' and ${file.optimizedUrls.isEmpty()}" class="card img_container shadow-sm">
-                        <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-url="${file.url}">
+                        <button type="button" data-toggle="modal" data-target="#imageModal" th:data-image-name="${file.name}" th:data-image-optimized-url="${file.url}" th:data-image-url="${file.url}">
                             <div class="image">
                                 <img th:src="@{${file.thumbUrl}}" class="img img-responsive full-width" />
                             </div>
                         </button>
                     </div>
                     <div th:if="${file.type} == 'video'" class="card img_container shadow-sm">
-                        <button type="button" data-toggle="modal" data-target="#videoModal" th:data-image-name="${file.name}" th:data-image-url="${file.url}">
+                        <button type="button" data-toggle="modal" data-target="#videoModal" th:data-image-name="${file.name}" th:data-image-optimized-url="${file.url}" th:data-image-url="${file.url}">
                             <div class="image">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-play-circle play_button" viewBox="0 0 16 16">
                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -272,10 +272,11 @@
     <script type="text/javascript">
         $('#imageModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget)
+            var imageOptimizedUrl = button.data('image-optimized-url')
             var imageUrl = button.data('image-url')
             var imageName = button.data('image-name')
             var modal = $(this)
-            modal.find('img').attr("src", imageUrl)
+            modal.find('img').attr("src", imageOptimizedUrl)
             modal.find('#caption').text(imageName)
             modal.find('#caption').attr("href", imageUrl)
             modal.find('#caption').attr("download", imageName)
@@ -283,10 +284,11 @@
 
         $('#videoModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget)
+            var imageOptimizedUrl = button.data('image-optimized-url')
             var imageUrl = button.data('image-url')
             var imageName = button.data('image-name')
             var modal = $(this)
-            modal.find('source').attr("src", imageUrl)
+            modal.find('source').attr("src", imageOptimizedUrl)
             modal.find('video')[0].load()
             modal.find('#caption').text(imageName)
             modal.find('#caption').attr("href", imageUrl)

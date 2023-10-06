@@ -1,6 +1,7 @@
 package com.cbidici.filepreviewer.config;
 
 import com.cbidici.filepreviewer.interceptor.ResourceOptimizationInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -9,25 +10,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
 
 @Configuration
+@RequiredArgsConstructor
 public class ResourceConfiguration extends WebMvcConfigurationSupport {
 
-    private final String rootPath;
-    private final String thumbnailDirectoryName;
-    private final String optimizedDirectoryName;
+    private final AppConfig appConfig;
     private final ResourceOptimizationInterceptor resourceOptimizationInterceptor;
-
-    @Autowired
-    public ResourceConfiguration(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName, ResourceOptimizationInterceptor resourceOptimizationInterceptor){
-        this.rootPath = rootDirectoryPath;
-        this.thumbnailDirectoryName = thumbnailDirectoryName;
-        this.optimizedDirectoryName = optimizedDirectoryName;
-        this.resourceOptimizationInterceptor = resourceOptimizationInterceptor;
-    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
-                .addResourceLocations("file:"+rootPath+"/")
+                .addResourceLocations("file:"+appConfig.getImagePath()+"/")
                 .resourceChain(true)
                 .addResolver(new EncodedResourceResolver());
     }
@@ -36,7 +28,7 @@ public class ResourceConfiguration extends WebMvcConfigurationSupport {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(resourceOptimizationInterceptor)
                 .addPathPatterns("/resources/**")
-                .excludePathPatterns("/resources/"+this.thumbnailDirectoryName+"/**")
-                .excludePathPatterns("/resources/"+this.optimizedDirectoryName+"/**");
+                .excludePathPatterns("/resources/"+appConfig.getThumbnailDirectory()+"/**")
+                .excludePathPatterns("/resources/"+appConfig.getOptimizedDirectory()+"/**");
     }
 }

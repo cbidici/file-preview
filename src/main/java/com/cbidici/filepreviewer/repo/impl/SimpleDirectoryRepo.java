@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.repo.impl;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.repo.DirectoryRepo;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,10 @@ public class SimpleDirectoryRepo implements DirectoryRepo {
     private final Path optimizedDirectoryPath;
 
     @Autowired
-    public SimpleDirectoryRepo(String rootDirectoryPath, String thumbnailDirectoryName, String optimizedDirectoryName) {
-        this.rootDirectoryPath = Path.of(rootDirectoryPath);
-        this.thumbnailDirectoryPath = this.rootDirectoryPath.resolve(thumbnailDirectoryName);
-        this.optimizedDirectoryPath = this.rootDirectoryPath.resolve(optimizedDirectoryName);
+    public SimpleDirectoryRepo(AppConfig appConfig) {
+        this.rootDirectoryPath = Path.of(appConfig.getImagePath());
+        this.thumbnailDirectoryPath = this.rootDirectoryPath.resolve(appConfig.getThumbnailDirectory());
+        this.optimizedDirectoryPath = this.rootDirectoryPath.resolve(appConfig.getOptimizedDirectory());
     }
 
     @Override

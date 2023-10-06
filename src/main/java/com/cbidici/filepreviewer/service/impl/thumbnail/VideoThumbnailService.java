@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service.impl.thumbnail;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.FileEntityNotFoundException;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
 import com.cbidici.filepreviewer.model.domain.ThumbnailDomain;
@@ -22,8 +23,8 @@ public class VideoThumbnailService extends ThumbnailService {
     private final ImageService imageService;
 
     @Autowired
-    public VideoThumbnailService(int thumbnailWidth, FileService fileService, VideoService videoService, ImageService imageService) {
-        super(thumbnailWidth, fileService);
+    public VideoThumbnailService(AppConfig appConfig, FileService fileService, VideoService videoService, ImageService imageService) {
+        super(appConfig.getThumbnailWidth(), fileService);
         this.videoService = videoService;
         this.imageService = imageService;
     }
