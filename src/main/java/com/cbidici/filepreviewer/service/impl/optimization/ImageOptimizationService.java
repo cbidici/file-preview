@@ -60,6 +60,6 @@ public class ImageOptimizationService extends OptimizationService {
 
     @Override
     public Set<FileType> getSupportedTypes() {
-        return Set.of(FileType.IMAGE_JPEG, FileType.IMAGE_PNG);
+        return Set.of();
     }
 }

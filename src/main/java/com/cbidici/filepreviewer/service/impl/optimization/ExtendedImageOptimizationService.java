@@ -43,13 +43,12 @@ public class ExtendedImageOptimizationService extends OptimizationService {
     public List<OptimizedDomain> getOptimized(String path)  {
         List<OptimizedDomain> optimizedList = new ArrayList<>();
         for(Integer optimizedWidth : optimizedWidths) {
-            String optimizedPath = fileService.getOptimizedPath(path, optimizedWidth);
-            var heicOptimizedPath = optimizedPath.substring(0, optimizedPath.lastIndexOf(".")) + ".heic.jpg";
+            String optimizedPath = fileService.getOptimizedPath(path, optimizedWidth)+".jpg";
             FileDomain optimizedFile;
             try {
-                optimizedFile = fileService.getFile(heicOptimizedPath);
+                optimizedFile = fileService.getFile(optimizedPath);
             } catch (FileEntityNotFoundException e) {
-                optimizedFile = generateAndSaveOptimized(path, heicOptimizedPath, optimizedWidth);
+                optimizedFile = generateAndSaveOptimized(path, optimizedPath, optimizedWidth);
             }
 
             optimizedList.add(OptimizedDomain.builder().size(optimizedWidth).file(optimizedFile).build());
@@ -82,6 +81,7 @@ public class ExtendedImageOptimizationService extends OptimizationService {
                 IMOperation op = new IMOperation();
                 Pipe pipeIn  = new Pipe(inputStream,null);
                 Pipe pipeOut  = new Pipe(null, baos);
+                op.autoOrient();
                 op.addImage("-");
                 op.resize(dimension.width, dimension.height);
                 op.addImage("jpeg:-");
@@ -106,6 +106,6 @@ public class ExtendedImageOptimizationService extends OptimizationService {
 
     @Override
     public Set<FileType> getSupportedTypes() {
-        return Set.of(FileType.IMAGE_HEIC);
+        return Set.of(FileType.IMAGE_HEIC, FileType.IMAGE_JPEG, FileType.IMAGE_PNG);
     }
 }

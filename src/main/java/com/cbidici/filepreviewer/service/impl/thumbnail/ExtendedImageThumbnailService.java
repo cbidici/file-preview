@@ -37,8 +37,7 @@ public class ExtendedImageThumbnailService extends ThumbnailService {
 
   @Override
   public ThumbnailDomain getThumbnail(String path) {
-    var heicThumbnailPath = path.substring(0, path.lastIndexOf(".")) + ".heic.jpg";
-    String thumbnailPath = fileService.getThumbnailPath(heicThumbnailPath);
+    String thumbnailPath = fileService.getThumbnailPath(path+".jpg");
 
     FileDomain thumbnailFile;
     try {
@@ -60,6 +59,7 @@ public class ExtendedImageThumbnailService extends ThumbnailService {
         IMOperation op = new IMOperation();
         Pipe pipeIn  = new Pipe(inputStream,null);
         Pipe pipeOut  = new Pipe(null, baos);
+        op.autoOrient();
         op.addImage("-");
         op.resize(dimension.width, dimension.height);
         op.addImage("jpeg:-");
@@ -84,6 +84,6 @@ public class ExtendedImageThumbnailService extends ThumbnailService {
 
   @Override
   public Set<FileType> getSupportedTypes() {
-    return Set.of(FileType.IMAGE_HEIC);
+    return Set.of(FileType.IMAGE_HEIC, FileType.IMAGE_JPEG, FileType.IMAGE_PNG);
   }
 }
