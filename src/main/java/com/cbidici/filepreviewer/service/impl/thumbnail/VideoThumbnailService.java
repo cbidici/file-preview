@@ -27,6 +27,7 @@ public class VideoThumbnailService extends ThumbnailService {
         super(appConfig.getThumbnailWidth(), fileService);
         this.videoService = videoService;
         this.imageService = imageService;
+
     }
 
     @Override
@@ -43,9 +44,10 @@ public class VideoThumbnailService extends ThumbnailService {
     }
 
     @Override
-    public BufferedImage generateThumbnail(String sourceFilePath) {
+    public void generateThumbnail(String sourceFilePath, String targetFilePath) {
         BufferedImage firstFrame = videoService.getFirstFrame(Path.of(fileService.getAbsolutePathOf(sourceFilePath)).toFile());
-        return imageService.getMaxSized(firstFrame, thumbnailWidth, thumbnailWidth);
+        BufferedImage resizedFrame = imageService.getMaxSized(firstFrame, thumbnailWidth, thumbnailWidth);
+        fileService.writeToFile(targetFilePath, resizedFrame);
     }
 
     @Override

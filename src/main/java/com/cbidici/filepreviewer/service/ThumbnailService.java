@@ -5,16 +5,12 @@ import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.FileDomain;
 import com.cbidici.filepreviewer.model.domain.ThumbnailDomain;
 import com.cbidici.filepreviewer.model.enm.FileType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import java.awt.image.BufferedImage;
 import java.util.Set;
 
+@Slf4j
 public abstract class ThumbnailService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ThumbnailService.class);
-
     protected int thumbnailWidth;
     protected FileService fileService;
 
@@ -39,16 +35,16 @@ public abstract class ThumbnailService {
         FileDomain result = null;
 
         try{
-            BufferedImage bufferedImage = generateThumbnail(sourceFilePath);
-            fileService.writeToFile(targetFilePath, bufferedImage);
+            generateThumbnail(sourceFilePath, targetFilePath);
             result = fileService.getFile(targetFilePath);
         } catch (MultimediaServiceBusinessException ex) {
-            LOG.error("Could not get frame from video", ex);
+            log.error("Could not get frame from video {}", sourceFilePath, ex);
         }
 
         return result;
     }
 
-    public abstract BufferedImage generateThumbnail(String path);
+    public abstract void generateThumbnail(String path, String targetPath);
+
     public abstract Set<FileType> getSupportedTypes();
 }

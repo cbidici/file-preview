@@ -3,6 +3,8 @@ package com.cbidici.filepreviewer.interceptor;
 import com.cbidici.filepreviewer.service.ContentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,7 +25,7 @@ public class ResourceOptimizationInterceptor implements HandlerInterceptor {
         String requestURL = request.getRequestURL().toString();
         String path = requestURL.split("/resources/").length == 1 ? "" : requestURL.split("/resources/")[1];
 
-        contentService.getContent(path);
+        contentService.getContent(URLDecoder.decode(path, StandardCharsets.UTF_8));
         return true;
     }
 }

@@ -10,7 +10,8 @@ public enum FileType {
     IMAGE_HEIC("image/heic"),
     IMAGE_GIF("image/gif"),
     VIDEO_MP4("video/mp4"),
-    VIDEO_QUICKTIME("video/quicktime");
+    VIDEO_QUICKTIME("video/quicktime"),
+    ARW("image/x-sony-arw");
 
     private static final Map<String, FileType> lookup = new HashMap<>();
     private final String name;

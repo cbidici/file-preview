@@ -33,30 +33,46 @@ public class SimpleFileRepo implements FileRepo {
     @Override
     public FileEntity getFile(String relativeFilePathStr) {
         Path relativeFilePath = Path.of(relativeFilePathStr);
-        File file = this.rootDirectoryPath.resolve(relativeFilePath).toFile();
+        Path absolutePath = this.rootDirectoryPath.resolve(relativeFilePath);
+        File file = absolutePath.toFile();
 
         if(!file.exists()) {
-            throw new FileEntityNotFoundException();
+            throw new FileEntityNotFoundException(absolutePath.toString());
         }
 
+        FileType type = findFileType(file);
+        if(null == type) {
+            throw new MultimediaServiceBusinessException(
+                String.format("Unsupported file %s with type name %s", file.getPath())
+            );
+        }
+
+        return FileEntity.builder()
+                .name(file.getName())
+                .path(relativeFilePathStr)
+                .directoryPath(file.isDirectory() ? "" : relativeFilePath.getParent().toString())
+                .type(type)
+                .build();
+    }
+
+    private FileType findFileType(File file) {
         try {
             String fileTypeName = Files.probeContentType(file.toPath());
             FileType type = FileType.getByName(fileTypeName);
             if(file.isDirectory()) {
                 type = FileType.DIRECTORY;
             }
+
             if(null == type) {
-                throw new MultimediaServiceBusinessException(
-                    String.format("Unsupported file %s with type name %s", file.getPath(), fileTypeName)
-                );
+                for (FileType iterateFileType : FileType.values()) {
+                    String extension = file.getPath().substring(file.getPath().lastIndexOf('.')+1);
+                    if(iterateFileType.name().equalsIgnoreCase(extension)) {
+                        type = iterateFileType;
+                    }
+                }
             }
 
-            return FileEntity.builder()
-                    .name(file.getName())
-                    .path(relativeFilePathStr)
-                    .directoryPath(file.isDirectory() ? "" : relativeFilePath.getParent().toString())
-                    .type(type)
-                    .build();
+            return type;
         } catch (IOException e) {
             throw new MultimediaServiceBusinessException(e);
         }
