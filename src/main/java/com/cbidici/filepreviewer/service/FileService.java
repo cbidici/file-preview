@@ -1,23 +1,75 @@
 package com.cbidici.filepreviewer.service;
 
-import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
-import com.cbidici.filepreviewer.model.domain.FileDomain;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
+import com.cbidici.filepreviewer.config.AppConfig;
+import com.cbidici.filepreviewer.exception.DirectoryNotFoundException;
+import com.cbidici.filepreviewer.exception.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-public interface FileService {
+import java.io.File;
+import java.nio.file.Path;
 
-    FileDomain getFile(String path);
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class FileService {
 
-    String getThumbnailPath(String path);
+  private final AppConfig appConfig;
 
-    String getOptimizedPath(String path, Integer optimizedWidth);
+  public File getFile(String path) {
+    File file = Path.of(appConfig.getRootPath()).resolve(path).toFile();
+    if (!file.exists()) {
+      throw new FileNotFoundException(path);
+    }
+    return file;
+  }
 
-    String getAbsolutePathOf(String path);
+  public Optional<File> findFile(String path) {
+    File file = Path.of(appConfig.getRootPath()).resolve(path).toFile();
+    if (!file.exists()) {
+      return Optional.empty();
+    }
+    return Optional.of(file);
+  }
 
-    void writeToFile(String targetFilePath, BufferedImage bufferedImage);
+  public List<File> getChildren(String path) {
+    File directory = Path.of(appConfig.getRootPath()).resolve(path).toFile();
+    if (!directory.isDirectory()) {
+      throw new DirectoryNotFoundException(path);
+    }
+
+    return Arrays.stream(Objects.requireNonNull(directory.listFiles()))
+        .filter(Predicate.not(File::isHidden))
+        .filter(file -> isReservedDirectory().negate().test(file))
+        .toList();
+  }
+
+  private Predicate<File> isReservedDirectory() {
+    return (file) ->
+        file.getPath().equals(getAbsolutePath(appConfig.getPreviewDirectory()).toString())
+            || file.getPath().equals(getAbsolutePath(appConfig.getThumbnailDirectory()).toString());
+  }
+
+  public Path getAbsolutePath(String path) {
+    return Path.of(appConfig.getRootPath()).resolve(path);
+  }
+
+  public void createDirectories(String path) {
+    var directoryPath = Path.of(appConfig.getRootPath()).resolve(path);
+    try {
+      if(!directoryPath.toFile().exists()) {
+        Files.createDirectories(directoryPath);
+      }
+    } catch (IOException ex) {
+      log.error("Could not create directory {}", directoryPath.toFile(), ex);
+    }
+  }
 }

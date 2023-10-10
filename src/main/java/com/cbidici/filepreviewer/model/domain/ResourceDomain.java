@@ -1,14 +1,15 @@
-package com.cbidici.filepreviewer.model.entity;
+package com.cbidici.filepreviewer.model.domain;
 
 import com.cbidici.filepreviewer.model.enm.ResourceType;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class FileEntity {
+public class ResourceDomain {
     private final String path;
     private final String name;
     private final ResourceType type;
-    private final String absolutePath;
+    private final Map<String, String> attributes;
 }

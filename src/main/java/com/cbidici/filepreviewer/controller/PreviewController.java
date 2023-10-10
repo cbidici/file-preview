@@ -1,61 +1,57 @@
 package com.cbidici.filepreviewer.controller;
 
-import com.cbidici.filepreviewer.model.view.BreadCrumbViewDto;
-import com.cbidici.filepreviewer.model.view.ContentModelViewDto;
-import com.cbidici.filepreviewer.service.ContentService;
+import com.cbidici.filepreviewer.model.response.BreadCrumbResponse;
+import com.cbidici.filepreviewer.model.response.ResourceResponse;
+import com.cbidici.filepreviewer.model.response.factory.ResourceResponseFactory;
+import com.cbidici.filepreviewer.service.ResourceService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.io.IOException;
 import java.net.URLDecoder;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 public class PreviewController {
 
-    ContentService contentService;
-
-    @Autowired
-    public PreviewController(ContentService contentService) {
-        this.contentService = contentService;
-    }
+    private final ResourceService resourceService;
+    private final ResourceResponseFactory factory;
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/gallery";
+        return "redirect:/resources";
     }
 
-    @GetMapping("/gallery/**")
-    public String gallery(HttpServletRequest request, Model model) throws IOException {
+    @GetMapping("/resources/**")
+    public String resources(HttpServletRequest request, Model model) {
         String requestURL = request.getRequestURL().toString();
-        String path = requestURL.split("/gallery/").length == 1 ? "" : requestURL.split("/gallery/")[1];
+        String path = requestURL.split("/resources/").length == 1 ? "" : requestURL.split("/resources/")[1];
 
         StringBuilder breadCrumbUrlBuilder = new StringBuilder();
-        breadCrumbUrlBuilder.append("/gallery");
+        breadCrumbUrlBuilder.append("/resources");
         String[] directories = path.split("/");
-        List<BreadCrumbViewDto> breadCrumbViewDtoList = new ArrayList<>();
-        breadCrumbViewDtoList.add(new BreadCrumbViewDto("Home", breadCrumbUrlBuilder.toString()));
+        List<BreadCrumbResponse> breadCrumbResponseList = new ArrayList<>();
+        breadCrumbResponseList.add(BreadCrumbResponse.builder().name("Home").url(breadCrumbUrlBuilder.toString()).build());
         for(String directory : directories) {
             if(!directory.isEmpty()) {
                 breadCrumbUrlBuilder.append("/").append(URLDecoder.decode(directory, StandardCharsets.UTF_8));
-                breadCrumbViewDtoList.add(new BreadCrumbViewDto(URLDecoder.decode(directory, StandardCharsets.UTF_8), breadCrumbUrlBuilder.toString()));
+                breadCrumbResponseList.add(BreadCrumbResponse.builder().name(URLDecoder.decode(directory, StandardCharsets.UTF_8)).url(breadCrumbUrlBuilder.toString()).build());
             }
         }
 
-        List<ContentModelViewDto> contents = contentService.getContents(URLDecoder.decode(path, StandardCharsets.UTF_8))
+        List<ResourceResponse> contents = resourceService.getChildren(URLDecoder.decode(path, StandardCharsets.UTF_8))
                 .stream()
-                .map(ContentModelViewDto::fromDomain)
+                .map(factory::getResourceResponse)
                 .collect(Collectors.toList());
 
-        model.addAttribute("breadCrumb", breadCrumbViewDtoList);
-        model.addAttribute("files", contents);
-        return "gallery";
+        model.addAttribute("breadCrumb", breadCrumbResponseList);
+        model.addAttribute("resources", contents);
+        return "resources";
     }
 }
