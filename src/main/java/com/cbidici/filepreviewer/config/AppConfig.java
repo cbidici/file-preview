@@ -14,6 +14,8 @@ public class AppConfig {
     private String rootPath;
     private String thumbnailDirectory;
     private int thumbnailWidth;
+    private int thumbnailThreadPoolSize;
     private String previewDirectory;
     private int previewWidth;
+    private int previewThreadPoolSize;
 }
