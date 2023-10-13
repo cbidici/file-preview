@@ -16,21 +16,9 @@ public class ResourceResponseFactory {
         .path(resource.getPath())
         .name(resource.getName())
         .type(ResourceViewType.from(resource.getType()).name())
-        .url(getUrl(resource))
-        .thumbnailUrl(getThumbnailUrl(resource))
-        .previewUrl(getPreviewUrl(resource))
+        .url(resource.getAttributes().get("url"))
+        .thumbnailUrl(resource.getAttributes().get("thumbnailUrl"))
+        .previewUrl(resource.getAttributes().get("previewUrl"))
         .build();
-  }
-
-  private String getUrl(ResourceDomain resource) {
-    return resource.getAttributes().get("url");
-  }
-
-  private String getThumbnailUrl(ResourceDomain resource) {
-    return resource.getAttributes().get("thumbnailUrl");
-  }
-
-  private String getPreviewUrl(ResourceDomain resource) {
-    return resource.getAttributes().get("previewUrl");
   }
 }

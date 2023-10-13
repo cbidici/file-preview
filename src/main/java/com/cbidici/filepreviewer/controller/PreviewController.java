@@ -23,11 +23,6 @@ public class PreviewController {
     private final ResourceService resourceService;
     private final ResourceResponseFactory factory;
 
-    @GetMapping("/")
-    public String index() {
-        return "redirect:/resources";
-    }
-
     @GetMapping("/resources/**")
     public String resources(HttpServletRequest request, Model model) {
         String requestURL = request.getRequestURL().toString();
