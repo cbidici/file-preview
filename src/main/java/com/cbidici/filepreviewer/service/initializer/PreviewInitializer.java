@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class PreviewInitializer implements ResourceInitializer {
 
   private final PreviewServiceFactory factory;
-  private final ThreadPoolTaskExecutor taskExecutor;
   private final AppConfig appConfig;
   @Override
   public void init(List<ResourceDomain> resources) {
@@ -33,7 +31,7 @@ public class PreviewInitializer implements ResourceInitializer {
     try {
       var service = factory.getService(resource.getType());
       if(service.isPresent()) {
-        taskExecutor.execute(() -> service.get().generate(resource));
+        executor.execute(() -> service.get().generate(resource));
         resource.getAttributes().put("previewUrl", previewUrl(resource.getPath()));
       }
     } finally {

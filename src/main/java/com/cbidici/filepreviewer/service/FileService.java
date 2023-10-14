@@ -6,6 +6,7 @@ import com.cbidici.filepreviewer.exception.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class FileService {
     return Arrays.stream(Objects.requireNonNull(directory.listFiles()))
         .filter(Predicate.not(File::isHidden))
         .filter(file -> isReservedDirectory().negate().test(file))
+        .sorted(Comparator.comparing(File::getName))
         .toList();
   }
 
