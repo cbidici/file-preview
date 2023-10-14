@@ -54,7 +54,7 @@ public class FileService {
 
   private boolean isValidPath(String path) {
     try {
-      Path rootPath = Path.of(path);
+      Path rootPath = Path.of(appConfig.getRootPath());
       Path requestedPath = rootPath.resolve(path);
       return requestedPath.toFile().getCanonicalPath().startsWith(rootPath.toFile().getCanonicalPath());
     } catch (IOException io) {
