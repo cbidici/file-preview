@@ -6,21 +6,21 @@ require('bootstrap');
 
 function ThumbnailView({resource, setPath, setPreviewResource}) {
   let thumbnail;
-  if(resource.type == 'DIRECTORY') {
+  if(resource.type === 'DIRECTORY') {
     thumbnail =
-      <a className="link_page" onClick={() => setPath(resource.path)} href="#">
+      <button type="button" className="btn btn-link" onClick={() => setPath(resource.path)}>
         <svg style={{padding:2+"em"}} xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" viewBox="0 0 16 16">
             <path d="M.54 3.87L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707z"/>
         </svg>
-      </a>
-  } else if(resource.type == "IMAGE") {
+      </button>
+  } else if(resource.type === "IMAGE") {
     thumbnail =
       <button type="button" onClick={() => setPreviewResource(resource)}>
         <div className="image">
-          <img src={resource.thumbnailUrl} className="img img-responsive full-width" />
+          <img src={resource.thumbnailUrl} alt="" className="img img-responsive full-width" />
         </div>
       </button>
-  } else if(resource.type == "VIDEO") {
+  } else if(resource.type === "VIDEO") {
     thumbnail =
       <button type="button" onClick={() => setPreviewResource(resource)}>
         <div className="image">
@@ -28,7 +28,7 @@ function ThumbnailView({resource, setPath, setPreviewResource}) {
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
             <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
           </svg>
-          <img src={resource.thumbnailUrl}  className="img img-responsive full-width" />
+          <img src={resource.thumbnailUrl} alt="" className="img img-responsive full-width" />
         </div>
       </button>
   }
@@ -46,9 +46,9 @@ function Preview({previewResource, setPreviewResource}) {
   }
 
   let preview;
-  if(previewResource.type == "IMAGE") {
-    preview = <img className="image_big" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} />
-  } else if(previewResource.type == "VIDEO") {
+  if(previewResource.type === "IMAGE") {
+    preview = <img className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} />
+  } else if(previewResource.type === "VIDEO") {
     preview =
       <video id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa"}} controls="" autoplay="">
         <source src={previewResource.url} type="video/mp4" />
@@ -78,18 +78,17 @@ function Preview({previewResource, setPreviewResource}) {
 
 
 function BreadCrumb({path, setPath}) {
-
   const breadCrumbs = () => {
-    let result = [{"name": "Home", "path":"/"}];
-    let generated = path.split("/").filter(crumb => crumb.length > 0).map(function (val) { return {"name":val, "path":this.accPath += "/"+val}; }, { accPath: "" });
+    let result = [{"name": "Home", "path":""}];
+    let generated = path.split("/").filter(crumb => crumb.length > 0).map(function (val, index) { return {"name":val, "path":this.accPath += index === 0 ? val : "/"+val}; }, { accPath: "" });
     result.push(...generated);
     return result;
   };
 
-  const breadCrumbList = !breadCrumbs() || breadCrumbs().length == 0 ? <></> :
+  const breadCrumbList = !breadCrumbs() || breadCrumbs().length === 0 ? <></> :
     breadCrumbs().map((bc, index) =>
       <li key={index} className="breadcrumb-item">
-        <a className="link_page" onClick={() => setPath(bc.path)} href="#">{bc.name}</a>
+        <button type="button" className="btn btn-link" onClick={() => setPath(bc.path)}>{bc.name}</button>
       </li>
   );
 
@@ -104,18 +103,40 @@ function BreadCrumb({path, setPath}) {
   );
 }
 
-
 function Gallery({path, setPath}) {
   const [resources, setResources] = useState([]);
-  const [breadCrumbs, setBreadCrumbs] = useState([]);
   const [previewResource, setPreviewResource] = useState();
 
   useEffect(() => {
-    fetch('/api/v1/resources'+"/"+path)
-          .then(response => response.json())
-          .then(json => setResources(json.resources))
-          .catch(error => console.error(error));
-  },[path]);
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    (async () => {
+      try {
+        const response = await fetch(
+          '/api/v1/resources/'+path,
+          { signal }
+        );
+
+        if (!signal.aborted) {
+          if (response.ok) {
+            const data = await response.json();
+            setResources(data.resources);
+          } else {
+            console.error('HTTP error! Status:' + response.status);
+          }
+        }
+      } catch (error) {
+        if (!signal.aborted) {
+          console.error(error);
+        }
+      }
+    })();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [path]);
 
   const thumbnails = resources.map((resource, index) =>
     <div key={index} className="col">
@@ -155,7 +176,6 @@ function Gallery({path, setPath}) {
     </>
   );
 }
-
 
 function App() {
   const [currentPath, setCurrentPath] = useState("");

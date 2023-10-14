@@ -87,6 +87,30 @@
     }
 }
 
+.btn-link {
+  color: #212529 !important;
+  padding: 0px;
+}
+
+.btn-link:hover {
+  color: #4e4e4e !important;
+  padding: 0px;
+}
+
+.btn-link:active {
+  color: #212529 !important;
+  padding: 0px;
+}
+
+.btn-link:visited {
+  color: #212529 !important;
+  padding: 0px;
+}
+
+li.breadcrumb-item::before {
+    padding-top: 2px;
+}
+
 a.link_page:link {
     color: #212529;
 }
