@@ -1,6 +1,7 @@
 package com.cbidici.filepreviewer.service.initializer;
 
 import com.cbidici.filepreviewer.config.AppConfig;
+import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.ResourceDomain;
 import com.cbidici.filepreviewer.service.priview.PreviewServiceFactory;
 import java.nio.file.Path;
@@ -21,22 +22,30 @@ public class PreviewInitializer implements ResourceInitializer {
 
   private final PreviewServiceFactory factory;
   private final AppConfig appConfig;
+
   @Override
   public void init(List<ResourceDomain> resources) {
-    resources.forEach(this::init);
+    resources.forEach(resource -> resource.getAttributes().put("previewUrl", previewUrl(resource.getPath())));
+
+    new Thread(() -> {
+      ThreadPoolExecutor executor = new ThreadPoolExecutor(appConfig.getPreviewThreadPoolSize(),
+          appConfig.getPreviewThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+      try {
+        resources.forEach(resource -> executor.execute(() -> generate(resource, executor)));
+        executor.shutdown();
+        executor.awaitTermination(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
+      } catch (InterruptedException e) {
+        throw new MultimediaServiceBusinessException(e);
+      } finally {
+        executor.shutdown();
+      }
+    }).start();
   }
 
-  private void init(ResourceDomain resource) {
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(appConfig.getPreviewThreadPoolSize(), appConfig.getPreviewThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-    try {
-      var service = factory.getService(resource.getType());
-      if(service.isPresent()) {
-        executor.execute(() -> service.get().generate(resource));
-        resource.getAttributes().put("previewUrl", previewUrl(resource.getPath()));
-      }
-    } finally {
-      executor.shutdown();
-    }
+  private void generate(ResourceDomain resource, ThreadPoolExecutor executor) {
+    log.info("Going to process : " + resource.getPath() + " Active Count:" + executor.getActiveCount() + " Get Queue Size:" + executor.getQueue().size());
+    var service = factory.getService(resource.getType());
+    service.ifPresent(previewService -> previewService.generate(resource));
   }
 
   private String previewUrl(String path) {

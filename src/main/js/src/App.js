@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
+import axios from 'axios';
 require('bootstrap');
 
 function ThumbnailView({resource, setPath, setPreviewResource}) {
@@ -57,7 +58,7 @@ function Preview({previewResource, setPreviewResource}) {
   }
 
   return (
-    <div className="modal show" id="imageModal" tabindex="-1" style={{display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.9)'}}  onClick={() => setPreviewResource()}>
+    <div className="modal show" id="imageModal" tabIndex="-1" style={{display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.9)'}}  onClick={() => setPreviewResource()}>
       <div className="modal-dialog modal-xxl">
         <div className="image_div_container d-flex align-items-center">
           <div className="image_modal_container d-flex align-items-center" onClick={e => e.stopPropagation()}>
@@ -106,13 +107,44 @@ function BreadCrumb({path, setPath}) {
 function Gallery({path, setPath}) {
   const [resources, setResources] = useState([]);
   const [previewResource, setPreviewResource] = useState();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+      let unmounted = false;
+      let source = axios.CancelToken.source();
+      axios.get('/api/v1/resources/'+path, {
+        cancelToken: source.token
+      })
+      .then(response => {
+        if (!unmounted) {
+          setResources(response.data.resources);
+          setLoading(false);
+        }
+      })
+      .catch(function (e) {
+        if (!unmounted) {
+          setLoading(false);
+          if (axios.isCancel(e)) {
+            console.log('request cancelled:'+e.message);
+          } else {
+            console.log('another error happened:' + e.message);
+          }
+        }
+      });
+      return function () {
+        unmounted = true;
+        source.cancel("Cancelling in cleanup");
+      };
+  }, [path]);
+
+
+  /*useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
     (async () => {
       try {
+        setLoading(true)
         const response = await fetch(
           '/api/v1/resources/'+path,
           { signal }
@@ -136,7 +168,7 @@ function Gallery({path, setPath}) {
     return () => {
       abortController.abort();
     };
-  }, [path]);
+   }, [path]);*/
 
   const thumbnails = resources.map((resource, index) =>
     <div key={index} className="col">
@@ -144,6 +176,16 @@ function Gallery({path, setPath}) {
       <div className="name_container card-body">{resource.name}</div>
     </div>
   );
+
+  let content;
+  if(loading) {
+    content = <div style={{textAlign:"center"}}>Loading...</div>
+  } else {
+    content =
+      <div className="row row-cols-auto">
+        {thumbnails}
+      </div>
+  }
 
   return (
     <>
@@ -159,12 +201,10 @@ function Gallery({path, setPath}) {
       </header>
       <main>
         <BreadCrumb path={path} setPath={setPath} />
-          <div className="album py-5 bg-light">
-            <div className="container-fluid">
-                <div className="row row-cols-auto">
-                  {thumbnails}
-                </div>
-            </div>
+        <div className="album py-5 bg-light">
+          <div className="container-fluid">
+            {content}
+          </div>
         </div>
         <Preview previewResource={previewResource} setPreviewResource={setPreviewResource} />
       </main>
