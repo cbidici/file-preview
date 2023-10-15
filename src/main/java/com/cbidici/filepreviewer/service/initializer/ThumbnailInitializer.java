@@ -27,7 +27,7 @@ public class ThumbnailInitializer implements ResourceInitializer{
   public void init(List<ResourceDomain> resources) {
     ThreadPoolExecutor executor = new ThreadPoolExecutor(appConfig.getThumbnailThreadPoolSize(), appConfig.getThumbnailThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     try {
-      resources.forEach(resource -> executor.execute(() -> init(resource, executor)));
+      resources.forEach(resource -> executor.execute(() -> init(resource)));
       executor.shutdown();
       executor.awaitTermination(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
@@ -37,8 +37,7 @@ public class ThumbnailInitializer implements ResourceInitializer{
     }
   }
 
-  private void init(ResourceDomain resource, ThreadPoolExecutor executor) {
-    log.info("Going to process : " + resource.getPath() + " Active Count:" + executor.getActiveCount() + " Get Queue Size:" + executor.getQueue().size());
+  private void init(ResourceDomain resource) {
     var service = factory.getService(resource.getType());
     if(service.isPresent()) {
       service.get().generate(resource);

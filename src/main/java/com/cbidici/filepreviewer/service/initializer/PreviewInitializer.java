@@ -31,7 +31,7 @@ public class PreviewInitializer implements ResourceInitializer {
       ThreadPoolExecutor executor = new ThreadPoolExecutor(appConfig.getPreviewThreadPoolSize(),
           appConfig.getPreviewThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
       try {
-        resources.forEach(resource -> executor.execute(() -> generate(resource, executor)));
+        resources.forEach(resource -> executor.execute(() -> generate(resource)));
         executor.shutdown();
         executor.awaitTermination(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
       } catch (InterruptedException e) {
@@ -42,8 +42,7 @@ public class PreviewInitializer implements ResourceInitializer {
     }).start();
   }
 
-  private void generate(ResourceDomain resource, ThreadPoolExecutor executor) {
-    log.info("Going to process : " + resource.getPath() + " Active Count:" + executor.getActiveCount() + " Get Queue Size:" + executor.getQueue().size());
+  private void generate(ResourceDomain resource) {
     var service = factory.getService(resource.getType());
     service.ifPresent(previewService -> previewService.generate(resource));
   }
