@@ -11,10 +11,12 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResourceService {
 
   private final List<ResourceInitializer> initializers;
@@ -44,12 +46,12 @@ public class ResourceService {
   }
 
   private ResourceType findResourceType(File file) {
+    if (file.isDirectory()) {
+      return ResourceType.DIRECTORY;
+    }
     try {
       String fileTypeName = Files.probeContentType(file.toPath());
       ResourceType type = ResourceType.getByName(fileTypeName);
-      if (file.isDirectory()) {
-        type = ResourceType.DIRECTORY;
-      }
 
       if (null == type) {
         for (ResourceType iterateResourceType : ResourceType.values()) {
@@ -61,6 +63,7 @@ public class ResourceService {
       }
       return type;
     } catch (IOException e) {
+      log.error("Failed to read type of resource {}", file.getPath(), e);
       throw new MultimediaServiceBusinessException(e);
     }
   }

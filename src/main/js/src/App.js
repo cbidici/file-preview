@@ -107,9 +107,10 @@ function BreadCrumb({path, setPath}) {
 function Gallery({path, setPath}) {
   const [resources, setResources] = useState([]);
   const [previewResource, setPreviewResource] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+      setLoading(true);
       let unmounted = false;
       let source = axios.CancelToken.source();
       axios.get('/api/v1/resources/'+path, {
@@ -179,8 +180,10 @@ function Gallery({path, setPath}) {
 
   let content;
   if(loading) {
+    console.log(loading)
     content = <div style={{textAlign:"center"}}>Loading...</div>
   } else {
+    console.log(loading)
     content =
       <div className="row row-cols-auto">
         {thumbnails}
