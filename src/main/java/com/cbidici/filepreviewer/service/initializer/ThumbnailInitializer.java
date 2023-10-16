@@ -6,6 +6,8 @@ import com.cbidici.filepreviewer.model.domain.ResourceDomain;
 import com.cbidici.filepreviewer.service.thumbnail.ThumbnailServiceFactory;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +19,13 @@ import org.springframework.stereotype.Service;
 @Order(2)
 @Slf4j
 public class ThumbnailInitializer implements ResourceInitializer{
+
+  private final AppConfig appConfig;
   private final ThumbnailServiceFactory factory;
-  private final ThumbnailInitializerThreadPoolExecutor executor;
 
   @Override
   public void init(List<ResourceDomain> resources) {
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(appConfig.getThumbnailThreadPoolSize(), appConfig.getThumbnailThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     try {
       resources.forEach(resource -> executor.execute(() -> init(resource)));
       executor.shutdown();
