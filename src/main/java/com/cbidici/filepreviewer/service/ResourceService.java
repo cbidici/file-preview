@@ -6,12 +6,12 @@ import com.cbidici.filepreviewer.model.enm.ResourceType;
 import com.cbidici.filepreviewer.service.initializer.ResourceInitializer;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,18 +50,9 @@ public class ResourceService {
       return ResourceType.DIRECTORY;
     }
     try {
-      String fileTypeName = Files.probeContentType(file.toPath());
-      ResourceType type = ResourceType.getByName(fileTypeName);
-
-      if (null == type) {
-        for (ResourceType iterateResourceType : ResourceType.values()) {
-          String extension = file.getPath().substring(file.getPath().lastIndexOf('.') + 1);
-          if (iterateResourceType.name().toLowerCase().endsWith(extension.toLowerCase())) {
-            type = iterateResourceType;
-          }
-        }
-      }
-      return type;
+      String fileTypeName = new Tika().detect(file);
+      String extension = file.getPath().substring(file.getPath().lastIndexOf('.') + 1);
+      return ResourceType.getByNameOrExtension(fileTypeName, extension);
     } catch (IOException e) {
       log.error("Failed to read type of resource {}", file.getPath(), e);
       throw new MultimediaServiceBusinessException(e);
