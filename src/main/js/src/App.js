@@ -51,7 +51,7 @@ function Preview({previewResource, setPreviewResource}) {
     preview = <img className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} />
   } else if(previewResource.type === "VIDEO") {
     preview =
-      <video id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa"}} controls="" autoplay="">
+      <video id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoplay="">
         <source src={previewResource.url} type="video/mp4" />
         Your browser does not support the video tag.
       </video>

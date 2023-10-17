@@ -6,6 +6,7 @@ import com.cbidici.filepreviewer.model.enm.ResourceType;
 import com.cbidici.filepreviewer.service.initializer.ResourceInitializer;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,10 @@ public class ResourceService {
       return ResourceType.DIRECTORY;
     }
     try {
-      String fileTypeName = new Tika().detect(file);
+      String fileTypeName = Files.probeContentType(file.toPath());
+      if(null == fileTypeName) {
+        fileTypeName = new Tika().detect(file);
+      }
       String extension = file.getPath().substring(file.getPath().lastIndexOf('.') + 1);
       return ResourceType.getByNameOrExtension(fileTypeName, extension);
     } catch (IOException e) {

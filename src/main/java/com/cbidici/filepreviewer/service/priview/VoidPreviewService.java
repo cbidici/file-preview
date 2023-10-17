@@ -16,7 +16,7 @@ public class VoidPreviewService extends PreviewService {
 
   @Override
   public Set<ResourceType> getSupportedTypes() {
-    return Set.of(ResourceType.DIRECTORY);
+    return Set.of(ResourceType.DIRECTORY, ResourceType.VIDEO_QUICKTIME, ResourceType.VIDEO_MP4);
   }
 
   @Override
