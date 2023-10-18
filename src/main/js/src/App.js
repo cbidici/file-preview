@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
-import axios from 'axios';
 require('bootstrap');
 
 function ThumbnailView({resource, setPath, setPreviewResource}) {
@@ -51,7 +50,7 @@ function Preview({previewResource, setPreviewResource}) {
     preview = <img className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} />
   } else if(previewResource.type === "VIDEO") {
     preview =
-      <video id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoplay="">
+      <video id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay>
         <source src={previewResource.url} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -105,90 +104,72 @@ function BreadCrumb({path, setPath}) {
 }
 
 function Gallery({path, setPath}) {
+
+  const observerTarget = useRef(null);
   const [resources, setResources] = useState([]);
   const [previewResource, setPreviewResource] = useState();
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState({offset:0, size:10});
+
+  const setPathClearResources = (path) => {
+    setResources([]);
+    setPath(path);
+    setPage({offset:0, size:10});
+  };
 
   useEffect(() => {
-      setLoading(true);
-      let unmounted = false;
-      let source = axios.CancelToken.source();
-      axios.get('/api/v1/resources/'+path, {
-        cancelToken: source.token
-      })
-      .then(response => {
-        if (!unmounted) {
-          setResources(response.data.resources);
-          setLoading(false);
-        }
-      })
-      .catch(function (e) {
-        if (!unmounted) {
-          setLoading(false);
-          if (axios.isCancel(e)) {
-            console.log('request cancelled:'+e.message);
-          } else {
-            console.log('another error happened:' + e.message);
-          }
-        }
-      });
-      return function () {
-        unmounted = true;
-        source.cancel("Cancelling in cleanup");
-      };
-  }, [path]);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
 
+      let spath = path;
+      if(spath.length>0) {
+        spath = "/"+spath;
+      }
 
-  /*useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
-    (async () => {
       try {
-        setLoading(true)
-        const response = await fetch(
-          '/api/v1/resources/'+path,
-          { signal }
-        );
-
-        if (!signal.aborted) {
-          if (response.ok) {
-            const data = await response.json();
-            setResources(data.resources);
-          } else {
-            console.error('HTTP error! Status:' + response.status);
-          }
+        const response = await fetch('/api/v1/resources'+spath+'?offset='+page.offset+'&size='+page.size);
+        const items = await response.json();
+        if(items.resources.length > 0) {
+          setPage({...page, offset:page.offset+page.size});
+          setResources(prevResources => [...prevResources, ...items.resources]);
         }
       } catch (error) {
-        if (!signal.aborted) {
-          console.error(error);
-        }
+        setError(error);
+      } finally {
+        setIsLoading(false);
       }
-    })();
+    };
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          fetchData();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    let observerTargetCurrent;
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+      observerTargetCurrent = observerTarget.current
+    }
 
     return () => {
-      abortController.abort();
+      if (observerTargetCurrent) {
+        observer.unobserve(observerTargetCurrent);
+      }
     };
-   }, [path]);*/
+  }, [path, resources, page]);
 
   const thumbnails = resources.map((resource, index) =>
     <div key={index} className="col">
-      <ThumbnailView resource={resource} setPath={setPath} setPreviewResource={setPreviewResource} />
+      <ThumbnailView resource={resource} setPath={setPathClearResources} setPreviewResource={setPreviewResource} />
       <div className="name_container card-body">{resource.name}</div>
     </div>
   );
-
-  let content;
-  if(loading) {
-    console.log(loading)
-    content = <div style={{textAlign:"center"}}>Loading...</div>
-  } else {
-    console.log(loading)
-    content =
-      <div className="row row-cols-auto">
-        {thumbnails}
-      </div>
-  }
 
   return (
     <>
@@ -203,10 +184,15 @@ function Gallery({path, setPath}) {
         </div>
       </header>
       <main>
-        <BreadCrumb path={path} setPath={setPath} />
+        <BreadCrumb path={path} setPath={setPathClearResources} />
         <div className="album py-5 bg-light">
           <div className="container-fluid">
-            {content}
+            <div className="row row-cols-auto">
+              {thumbnails}
+              <div ref={observerTarget}></div>
+            </div>
+            {isLoading && <div style={{textAlign:"center"}}><h3>Loading...</h3></div>}
+            {error && <p>Error: {error.message}</p>}
           </div>
         </div>
         <Preview previewResource={previewResource} setPreviewResource={setPreviewResource} />

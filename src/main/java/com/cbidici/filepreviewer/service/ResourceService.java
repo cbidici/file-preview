@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class ResourceService {
         .build();
   }
 
-  public List<ResourceDomain> getChildren(String path) {
+  public List<ResourceDomain> getChildren(String path, int offset, int size) {
     var resources = fileService.getChildren(path).stream()
         .map(file -> ResourceDomain.builder()
             .name(file.getName())
@@ -40,6 +41,9 @@ public class ResourceService {
             .path(Path.of(path).resolve(file.getName()).toString())
             .attributes(new HashMap<>())
             .build())
+        .sorted(Comparator.comparing(ResourceDomain::getName))
+        .skip(offset)
+        .limit(size)
         .toList();
 
     initializers.forEach(initializer -> initializer.init(resources));

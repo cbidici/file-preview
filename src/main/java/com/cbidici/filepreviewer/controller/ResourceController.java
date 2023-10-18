@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,11 +25,15 @@ public class ResourceController {
   private final ResourceResponseFactory factory;
 
   @GetMapping({"", "/**"})
-  public ResponseEntity<ResourcePageResponse> resources(HttpServletRequest request) {
+  public ResponseEntity<ResourcePageResponse> resources(
+      HttpServletRequest request,
+      @RequestParam(defaultValue = "0") int offset,
+      @RequestParam(defaultValue = "0") int size
+  ) {
     String requestURL = request.getRequestURL().toString();
     String path = requestURL.split("/resources/").length == 1 ? "" : requestURL.split("/resources/")[1];
 
-    List<ResourceResponse> contents = service.getChildren(URLDecoder.decode(path, StandardCharsets.UTF_8))
+    List<ResourceResponse> contents = service.getChildren(URLDecoder.decode(path, StandardCharsets.UTF_8), offset, size)
         .stream()
         .map(factory::getResourceResponse)
         .collect(Collectors.toList());
