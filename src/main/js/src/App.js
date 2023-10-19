@@ -4,7 +4,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
 require('bootstrap');
 
-function ThumbnailView({resource, setPath, setPreviewResource}) {
+function ThumbnailView({resource, setPath, setPreviewResource, index}) {
   let thumbnail;
   if(resource.type === 'DIRECTORY') {
     thumbnail =
@@ -15,14 +15,14 @@ function ThumbnailView({resource, setPath, setPreviewResource}) {
       </button>
   } else if(resource.type === "IMAGE") {
     thumbnail =
-      <button type="button" onClick={() => setPreviewResource(resource)}>
+      <button type="button" onClick={() => setPreviewResource(index)}>
         <div className="image">
           <img src={resource.thumbnailUrl} alt="" className="img img-responsive full-width" />
         </div>
       </button>
   } else if(resource.type === "VIDEO") {
     thumbnail =
-      <button type="button" onClick={() => setPreviewResource(resource)}>
+      <button type="button" onClick={() => setPreviewResource(index)}>
         <div className="image">
           <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" className="bi bi-play-circle play_button" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -40,13 +40,51 @@ function ThumbnailView({resource, setPath, setPreviewResource}) {
   );
 }
 
-function Preview({previewResource, setPreviewResource}) {
+function Preview({isLoading, previewResource, setPreviewResource, index}) {
+  const useKeyDown = (callback, keys) => {
+    useEffect(() => {
+      const onKeyDown = (event) => {
+        const wasAnyKeyPressed = keys.some((key) => event.key === key);
+        if (wasAnyKeyPressed) {
+          event.preventDefault();
+          callback();
+        }
+      };
+      document.addEventListener('keydown', onKeyDown);
+      return () => {
+        document.removeEventListener('keydown', onKeyDown);
+      };
+    });
+  };
+
+  useKeyDown(() => {
+    if(index != null && !isLoading) setPreviewResource(null);
+  }, ["Escape"]);
+
+
+  useKeyDown(() => {
+    if(index != null && !isLoading) setPreviewResource(index-1);
+  }, ["ArrowLeft"]);
+
+  useKeyDown(() => {
+    if(index != null && !isLoading) setPreviewResource(index+1);
+  }, ["ArrowRight"]);
+
   if(!previewResource) {
     return <></>
   }
 
   let preview;
-  if(previewResource.type === "IMAGE") {
+  if (isLoading) {
+    preview =
+      <div style={{width:"100%", height:"100%"}}>
+        <div style={{top:"50%", left:"50%", position:"absolute"}}>
+          <div className="spinner-border text-light" role="status" style={{width:"5rem", height:"5rem"}}>
+            <span className="sr-only"></span>
+          </div>
+        </div>
+      </div>
+  } else if(previewResource.type === "IMAGE") {
     preview = <img className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} />
   } else if(previewResource.type === "VIDEO") {
     preview =
@@ -57,18 +95,28 @@ function Preview({previewResource, setPreviewResource}) {
   }
 
   return (
-    <div className="modal show" id="imageModal" tabIndex="-1" style={{display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.9)'}}  onClick={() => setPreviewResource()}>
+    <div className="modal show" id="imageModal" tabIndex="-1" style={{display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.9)'}}  onClick={() => setPreviewResource(null)}>
       <div className="modal-dialog modal-xxl">
         <div className="image_div_container d-flex align-items-center">
           <div className="image_modal_container d-flex align-items-center" onClick={e => e.stopPropagation()}>
-            <button type="button" className="close" onClick={() => setPreviewResource()}>
+            <button type="button" className="close" onClick={() => setPreviewResource(null)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-square close_button" viewBox="0 0 16 16">
                 <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"></path>
                 <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
               </svg>
             </button>
+            <button type="button" onClick={() => setPreviewResource(index-1)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-left prev_button" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+              </svg>
+            </button>
+            <button type="button" onClick={() => setPreviewResource(index+1)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-right next_button" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </button>
             {preview}
-            <div className="caption_container"><a id="caption" download={previewResource.name} href={previewResource.url} onClick={() => setPreviewResource()}>{previewResource.name}</a></div>
+            {!isLoading && <div className="caption_container"><a id="caption" download={previewResource.name} href={previewResource.url} onClick={() => setPreviewResource(null)}>{previewResource.name}</a></div>}
           </div>
         </div>
       </div>
@@ -107,45 +155,80 @@ function Gallery({path, setPath}) {
 
   const observerTarget = useRef(null);
   const [resources, setResources] = useState([]);
-  const [previewResource, setPreviewResource] = useState();
+  const [index, setIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState({offset:0, size:10});
+
+  const setPreviewResourceByIndex = (index) => {
+    if(isLoading) {
+      return;
+    }
+
+    if(index == null) {
+      setIndex(null);
+      return;
+    }
+
+    if(index<0) {
+      setIndex(null);
+    } else if(index < resources.length) {
+      setIndex(index);
+    }
+    else {
+      fetchData(path, page)
+        .then(res => {
+          if(res.resources.length > 0) {
+            setPage({...page, offset:page.offset+page.size});
+            setResources(prevResources => [...prevResources, ...res.resources]);
+            setIndex(index);
+          } else {
+            setIndex(null);
+          }
+        });
+
+    }
+  };
 
   const setPathClearResources = (path) => {
     setResources([]);
     setPath(path);
     setPage({offset:0, size:10});
+    setIndex(null);
+  };
+
+  const fetchData = async (fetchPath, fetchPage) => {
+    setIsLoading(true);
+    setError(null);
+
+    if(fetchPath.length>0) {
+      fetchPath = "/"+fetchPath;
+    }
+
+    try {
+      return await fetch('/api/v1/resources'+fetchPath+'?offset='+fetchPage.offset+'&size='+fetchPage.size)
+        .then(res => res.json())
+        .then((data) => {
+          return data;
+        });
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      let spath = path;
-      if(spath.length>0) {
-        spath = "/"+spath;
-      }
-
-      try {
-        const response = await fetch('/api/v1/resources'+spath+'?offset='+page.offset+'&size='+page.size);
-        const items = await response.json();
-        if(items.resources.length > 0) {
-          setPage({...page, offset:page.offset+page.size});
-          setResources(prevResources => [...prevResources, ...items.resources]);
-        }
-      } catch (error) {
-        setError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting) {
-          fetchData();
+          let fetchedResources = fetchData(path, page);
+          fetchedResources.then(res => {
+            if(res.resources.length > 0) {
+              setPage({...page, offset:page.offset+page.size});
+              setResources(prevResources => [...prevResources, ...res.resources]);
+            }
+          });
         }
       },
       { threshold: 0.1 }
@@ -166,7 +249,7 @@ function Gallery({path, setPath}) {
 
   const thumbnails = resources.map((resource, index) =>
     <div key={index} className="col">
-      <ThumbnailView resource={resource} setPath={setPathClearResources} setPreviewResource={setPreviewResource} />
+      <ThumbnailView resource={resource} setPath={setPathClearResources} setPreviewResource={setPreviewResourceByIndex} index={index} />
       <div className="name_container card-body">{resource.name}</div>
     </div>
   );
@@ -191,11 +274,17 @@ function Gallery({path, setPath}) {
               {thumbnails}
               <div ref={observerTarget}></div>
             </div>
-            {isLoading && <div style={{textAlign:"center"}}><h3>Loading...</h3></div>}
+            {isLoading &&
+              <div className="d-flex justify-content-center">
+                <div className="spinner-border text-dark" role="status" style={{width:"5rem", height:"5rem"}}>
+                  <span className="sr-only"></span>
+                </div>
+              </div>
+            }
             {error && <p>Error: {error.message}</p>}
           </div>
         </div>
-        <Preview previewResource={previewResource} setPreviewResource={setPreviewResource} />
+        <Preview isLoading={isLoading} previewResource={resources[index]} setPreviewResource={setPreviewResourceByIndex} index={index}/>
       </main>
       <footer className="text-muted py-5">
         <div className="container-fluid">

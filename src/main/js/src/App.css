@@ -172,6 +172,28 @@ button {
     pointer-events: auto;
 }
 
+.next_button{
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    color: #ddd;
+    top: 50%;
+    right: 2em;
+    z-index: 1060;
+    pointer-events: auto;
+}
+
+.prev_button{
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    color: #ddd;
+    top: 50%;
+    left: 2em;
+    z-index: 1060;
+    pointer-events: auto;
+}
+
 .modal-backdrop
 {
     opacity:0.9 !important;
