@@ -17,5 +17,4 @@ public class AppConfig {
     private int thumbnailThreadPoolSize;
     private String previewDirectory;
     private int previewWidth;
-    private int previewThreadPoolSize;
 }

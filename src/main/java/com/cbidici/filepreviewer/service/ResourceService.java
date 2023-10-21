@@ -3,6 +3,7 @@ package com.cbidici.filepreviewer.service;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.ResourceDomain;
 import com.cbidici.filepreviewer.model.enm.ResourceType;
+import com.cbidici.filepreviewer.service.initializer.PreInitializer;
 import com.cbidici.filepreviewer.service.initializer.ResourceInitializer;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class ResourceService {
 
   private final List<ResourceInitializer> initializers;
+  private final List<PreInitializer> preInitializers;
   private final FileService fileService;
 
   public ResourceDomain getResource(String path) {
@@ -34,7 +36,7 @@ public class ResourceService {
   }
 
   public List<ResourceDomain> getChildren(String path, int offset, int size) {
-    var resources = fileService.getChildren(path).stream()
+    var allResources = fileService.getChildren(path).stream()
         .map(file -> ResourceDomain.builder()
             .name(file.getName())
             .type(findResourceType(file))
@@ -42,11 +44,20 @@ public class ResourceService {
             .attributes(new HashMap<>())
             .build())
         .sorted(Comparator.comparing(ResourceDomain::getName))
+        .toList();
+
+    var resources = allResources.stream()
         .skip(offset)
         .limit(size)
         .toList();
 
+    var nextResources = allResources.stream()
+        .skip(offset+size)
+        .limit(size)
+        .toList();
+
     initializers.forEach(initializer -> initializer.init(resources));
+    preInitializers.forEach(initializer -> initializer.preInit(nextResources));
     return resources;
   }
 
