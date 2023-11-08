@@ -11,6 +11,7 @@ import com.cbidici.filepreviewer.model.domain.ResourceDomain;
 import com.cbidici.filepreviewer.model.enm.ResourceType;
 import com.cbidici.filepreviewer.service.FileService;
 import com.cbidici.filepreviewer.service.multimedia.ImageService;
+import java.nio.file.Path;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,13 @@ import org.springframework.stereotype.Service;
 public class ImagePreviewService extends PreviewService{
 
   private final ImageService imageService;
+  private final AppConfig appConfig;
 
   public ImagePreviewService(
       AppConfig appConfig, FileService fileService, ImageService imageService
   ) {
     super(appConfig, fileService);
+    this.appConfig = appConfig;
     this.imageService = imageService;
   }
 
@@ -34,8 +37,8 @@ public class ImagePreviewService extends PreviewService{
   @Override
   protected void generatePreview(ResourceDomain resource) {
     imageService.resize(
-        fileService.getAbsolutePath(resource.getPath()),
-        fileService.getAbsolutePath(getPreviewPath(resource)),
+        Path.of(appConfig.getFilesPath()).resolve(resource.getPath()),
+        Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.PREVIEWS).resolve(resource.getPath()+".jpg"),
         previewDimension
     );
   }

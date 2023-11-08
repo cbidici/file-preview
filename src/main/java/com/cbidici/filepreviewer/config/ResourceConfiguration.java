@@ -1,6 +1,7 @@
 package com.cbidici.filepreviewer.config;
 
 import com.cbidici.filepreviewer.controller.ResourcePathResolver;
+import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -27,7 +28,21 @@ public class ResourceConfiguration extends WebMvcConfigurationSupport {
         .addResourceLocations("classpath:/static/");
 
     registry.addResourceHandler("/" + AppConfig.FILE_URL_PATH + "/**")
-        .addResourceLocations("file:"+appConfig.getRootPath()+"/")
+        .addResourceLocations("file:"+appConfig.getFilesPath()+"/")
+        .resourceChain(true)
+        .addResolver(new EncodedResourceResolver())
+        .addResolver(resourcePathResolver)
+        .addResolver(new PathResourceResolver());
+
+    registry.addResourceHandler("/" + AppConfig.PREVIEWS + "/**")
+        .addResourceLocations("file:"+ Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.PREVIEWS)+"/")
+        .resourceChain(true)
+        .addResolver(new EncodedResourceResolver())
+        .addResolver(resourcePathResolver)
+        .addResolver(new PathResourceResolver());
+
+    registry.addResourceHandler("/" + AppConfig.THUMBNAILS + "/**")
+        .addResourceLocations("file:"+Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.THUMBNAILS)+"/")
         .resourceChain(true)
         .addResolver(new EncodedResourceResolver())
         .addResolver(resourcePathResolver)

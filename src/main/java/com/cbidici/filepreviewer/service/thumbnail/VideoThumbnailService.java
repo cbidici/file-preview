@@ -7,6 +7,7 @@ import com.cbidici.filepreviewer.service.FileService;
 import com.cbidici.filepreviewer.service.multimedia.ImageService;
 import com.cbidici.filepreviewer.service.multimedia.VideoService;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,14 @@ public class VideoThumbnailService extends ThumbnailService {
 
   private final VideoService videoService;
   private final ImageService imageService;
+  private final AppConfig appConfig;
 
   public VideoThumbnailService(
       AppConfig appConfig, FileService fileService,
       VideoService videoService, ImageService imageService
   ) {
     super(appConfig, fileService);
+    this.appConfig = appConfig;
     this.imageService = imageService;
     this.videoService = videoService;
   }
@@ -36,10 +39,10 @@ public class VideoThumbnailService extends ThumbnailService {
   @Override
   protected void generateThumbnail(ResourceDomain resource) {
     BufferedImage firstFrame = videoService
-        .getFirstFrame(fileService.getAbsolutePath(resource.getPath()));
+        .getFirstFrame(Path.of(appConfig.getFilesPath()).resolve(resource.getPath()));
     imageService.resizeSave(
         firstFrame, thumbnailDimension,
-        fileService.getAbsolutePath(getThumbnailPath(resource))
+        Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.THUMBNAILS).resolve(resource.getPath()+".jpg")
     );
   }
 }

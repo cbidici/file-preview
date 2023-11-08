@@ -24,16 +24,16 @@ public class FileService {
 
   private final AppConfig appConfig;
 
-  public File getFile(String path) {
-    File file = Path.of(appConfig.getRootPath()).resolve(path).toFile();
-    if (!file.exists()) {
-      throw new FileNotFoundException(path);
+  public File getFile(Path path) {
+    File file = path.toFile();
+    if (!file.exists() || !isValidPath(path)) {
+      throw new FileNotFoundException(path.toString());
     }
     return file;
   }
 
-  public Optional<File> findFile(String path) {
-    File file = Path.of(appConfig.getRootPath()).resolve(path).toFile();
+  public Optional<File> findFile(Path path) {
+    File file = path.toFile();
     if (!file.exists() || !isValidPath(path)) {
       return Optional.empty();
     }
@@ -41,45 +41,33 @@ public class FileService {
   }
 
   public List<File> getChildren(String path) {
-    File directory = Path.of(appConfig.getRootPath()).resolve(path).toFile();
+    File directory = Path.of(path).toFile();
 
-    if (!directory.isDirectory() || !isValidPath(path)) {
+    if (!directory.isDirectory() || !isValidPath(directory.toPath())) {
       throw new DirectoryNotFoundException(path);
     }
     return Arrays.stream(Objects.requireNonNull(directory.listFiles()))
         .filter(Predicate.not(File::isHidden))
-        .filter(file -> isReservedDirectory().negate().test(file))
         .toList();
   }
 
-  private boolean isValidPath(String path) {
+  private boolean isValidPath(Path path) {
     try {
-      Path rootPath = Path.of(appConfig.getRootPath());
-      Path requestedPath = rootPath.resolve(path);
-      return requestedPath.toFile().getCanonicalPath().startsWith(rootPath.toFile().getCanonicalPath());
+      return path.toFile().getCanonicalPath().startsWith(Path.of(appConfig.getFilesPath()).toFile().getCanonicalPath()) ||
+          path.toFile().getCanonicalPath().startsWith(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.THUMBNAILS).toFile().getCanonicalPath()) ||
+          path.toFile().getCanonicalPath().startsWith(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.PREVIEWS).toFile().getCanonicalPath());
     } catch (IOException io) {
       return false;
     }
   }
 
-  private Predicate<File> isReservedDirectory() {
-    return (file) ->
-        file.getPath().equals(getAbsolutePath(appConfig.getPreviewDirectory()).toString())
-            || file.getPath().equals(getAbsolutePath(appConfig.getThumbnailDirectory()).toString());
-  }
-
-  public Path getAbsolutePath(String path) {
-    return Path.of(appConfig.getRootPath()).resolve(path);
-  }
-
-  public void createDirectories(String path) {
-    var directoryPath = Path.of(appConfig.getRootPath()).resolve(path);
+  public void createDirectories(Path path) {
     try {
-      if(!directoryPath.toFile().exists()) {
-        Files.createDirectories(directoryPath);
+      if(!path.toFile().exists()) {
+        Files.createDirectories(path);
       }
     } catch (IOException ex) {
-      log.error("Could not create directory {}", directoryPath.toFile(), ex);
+      log.error("Could not create directory {}", path.toFile(), ex);
     }
   }
 }

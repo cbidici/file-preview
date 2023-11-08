@@ -27,7 +27,7 @@ public class ThumbnailInitializer implements ResourceInitializer, PreInitializer
 
   @Override
   public void init(List<ResourceDomain> resources) {
-    ThreadPoolExecutor thumbnailInitExecutor = new ThreadPoolExecutor(appConfig.getThumbnailThreadPoolSize(), appConfig.getThumbnailThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    ThreadPoolExecutor thumbnailInitExecutor = new ThreadPoolExecutor(appConfig.getThumbnailsThreadPoolSize(), appConfig.getThumbnailsThreadPoolSize(), 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     try {
       resources.forEach(resource -> thumbnailInitExecutor.execute(() -> init(resource)));
       thumbnailInitExecutor.shutdown();
@@ -50,7 +50,7 @@ public class ThumbnailInitializer implements ResourceInitializer, PreInitializer
   }
 
   private String thumbnailUrl(String path) {
-    return Path.of("/").resolve(AppConfig.FILE_URL_PATH).resolve(path).resolve("thumbnail").toString();
+    return Path.of("/").resolve(AppConfig.THUMBNAILS).resolve(path).toString();
   }
 
   @Override

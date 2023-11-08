@@ -1,8 +1,8 @@
 package com.cbidici.filepreviewer.controller;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.service.ResourceService;
 import com.cbidici.filepreviewer.service.priview.PreviewServiceFactory;
-import com.cbidici.filepreviewer.service.thumbnail.ThumbnailServiceFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +19,6 @@ import org.springframework.web.servlet.resource.ResourceResolverChain;
 @Component
 @RequiredArgsConstructor
 public class ResourcePathResolver extends PathResourceResolver {
-  private final ThumbnailServiceFactory thumbnailServiceFactory;
   private final PreviewServiceFactory previewServiceFactory;
   private final ResourceService resourceService;
 
@@ -28,26 +27,25 @@ public class ResourcePathResolver extends PathResourceResolver {
   public Resource resolveResource(@Nullable HttpServletRequest request, @NonNull String requestPath,
       @NonNull List<? extends Resource> locations, @NonNull ResourceResolverChain chain) {
 
-    var systemDirectories = Set.of("thumbnail", "preview");
-    requestPath = URLDecoder.decode(requestPath, StandardCharsets.UTF_8);
-    if(requestPath.contains("/") && systemDirectories.contains(requestPath.substring(requestPath.lastIndexOf("/")+1))) {
-      String resourceType = requestPath.substring(requestPath.lastIndexOf("/")+1);
-      String resourcePath = requestPath.substring(0, requestPath.lastIndexOf("/"));
-      requestPath= getResourcePath(resourceType, resourcePath);
+    var systemDirectories = Set.of(AppConfig.THUMBNAILS, AppConfig.PREVIEWS);
+    var resourcePath = URLDecoder.decode(requestPath, StandardCharsets.UTF_8);
+    if(requestPath.contains("/") && systemDirectories.contains(request.getRequestURI().substring(1, request.getRequestURI().indexOf("/",1)))) {
+      String resourceType = request.getRequestURI().substring(1, request.getRequestURI().indexOf("/",1));
+      requestPath = getResourcePath(resourceType, resourcePath);
     }
 
     return chain.resolveResource(request, requestPath, locations);
   }
 
   private String getResourcePath(String type, String path) {
-    var resource = resourceService.getResource(path);
-    if(type.equals("thumbnail")) {
-      return thumbnailServiceFactory.getService(resource.getType()).map(service -> service.getThumbnailPath(resource)).orElse(path);
-    } else if(type.equals("preview")) {
+    if(type.equals("thumbnails")) {
+      return path + ".jpg";
+    } else if(type.equals("previews")) {
+      var resource = resourceService.getResource(path);
       var previewService = previewServiceFactory.getService(resource.getType());
       if(previewService.isPresent()) {
         previewService.get().generate(resource);
-        return previewService.get().getPreviewPath(resource);
+        return path + ".jpg";
       }
     }
     return path;

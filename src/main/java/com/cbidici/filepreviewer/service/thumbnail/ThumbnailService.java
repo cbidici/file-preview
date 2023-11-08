@@ -17,12 +17,12 @@ public abstract class ThumbnailService {
   public ThumbnailService(AppConfig appConfig, FileService fileService) {
     this.appConfig = appConfig;
     this.fileService = fileService;
-    this.thumbnailDimension = new Dimension(appConfig.getThumbnailWidth(), appConfig.getThumbnailWidth());
+    this.thumbnailDimension = new Dimension(appConfig.getThumbnailsWidth(), appConfig.getThumbnailsWidth());
   }
 
   public void generate(ResourceDomain resource) {
-    if(fileService.findFile(getThumbnailPath(resource)).isEmpty()) {
-      fileService.createDirectories(Path.of(getThumbnailPath(resource)).getParent().toString());
+    if(fileService.findFile(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.THUMBNAILS).resolve(resource.getPath()+".jpg")).isEmpty()) {
+      fileService.createDirectories(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.THUMBNAILS).resolve(resource.getPath()+".jpg").getParent());
       generateThumbnail(resource);
     }
   }
@@ -30,8 +30,4 @@ public abstract class ThumbnailService {
   public abstract Set<ResourceType> getSupportedTypes();
 
   protected abstract void generateThumbnail(ResourceDomain resource);
-
-  public String getThumbnailPath(ResourceDomain resource) {
-    return Path.of(appConfig.getThumbnailDirectory()).resolve(resource.getPath())+".jpg";
-  }
 }

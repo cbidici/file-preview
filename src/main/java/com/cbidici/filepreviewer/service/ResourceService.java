@@ -1,5 +1,6 @@
 package com.cbidici.filepreviewer.service;
 
+import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import com.cbidici.filepreviewer.model.domain.ResourceDomain;
 import com.cbidici.filepreviewer.model.enm.ResourceType;
@@ -25,9 +26,10 @@ public class ResourceService {
   private final List<ResourceInitializer> initializers;
   private final List<PreInitializer> preInitializers;
   private final FileService fileService;
+  private final AppConfig appConfig;
 
   public ResourceDomain getResource(String path) {
-    var file = fileService.getFile(path);
+    var file = fileService.getFile(Path.of(appConfig.getFilesPath()).resolve(path));
     return ResourceDomain.builder()
         .name(file.getName())
         .type(findResourceType(file))
@@ -36,7 +38,7 @@ public class ResourceService {
   }
 
   public List<ResourceDomain> getChildren(String path, int offset, int size) {
-    var allResources = fileService.getChildren(path).stream()
+    var allResources = fileService.getChildren(Path.of(appConfig.getFilesPath()).resolve(path).toString()).stream()
         .map(file -> ResourceDomain.builder()
             .name(file.getName())
             .type(findResourceType(file))

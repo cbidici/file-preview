@@ -16,12 +16,12 @@ public abstract class PreviewService {
   public PreviewService(AppConfig appConfig, FileService fileService) {
     this.appConfig = appConfig;
     this.fileService = fileService;
-    this.previewDimension = new Dimension(appConfig.getPreviewWidth(), appConfig.getPreviewWidth());
+    this.previewDimension = new Dimension(appConfig.getPreviewsWidth(), appConfig.getPreviewsWidth());
   }
 
   public void generate(ResourceDomain resource) {
-    if(fileService.findFile(getPreviewPath(resource)).isEmpty()) {
-      fileService.createDirectories(Path.of(getPreviewPath(resource)).getParent().toString());
+    if(fileService.findFile(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.PREVIEWS).resolve(resource.getPath()+".jpg")).isEmpty()) {
+      fileService.createDirectories(Path.of(appConfig.getSystemFilesPath()).resolve(AppConfig.PREVIEWS).resolve(resource.getPath()+".jpg").getParent());
       generatePreview(resource);
     }
   }
@@ -29,8 +29,4 @@ public abstract class PreviewService {
   public abstract Set<ResourceType> getSupportedTypes();
 
   protected abstract void generatePreview(ResourceDomain resource);
-
-  public String getPreviewPath(ResourceDomain resource) {
-    return Path.of(appConfig.getPreviewDirectory()).resolve(resource.getPath())+".jpg";
-  }
 }

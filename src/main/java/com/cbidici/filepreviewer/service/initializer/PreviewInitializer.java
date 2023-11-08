@@ -36,7 +36,7 @@ public class PreviewInitializer implements ResourceInitializer, PreInitializer {
   }
 
   private String previewUrl(String path) {
-    return Path.of("/").resolve(AppConfig.FILE_URL_PATH).resolve(path).resolve("preview").toString();
+    return Path.of("/").resolve(AppConfig.PREVIEWS).resolve(path).toString();
   }
 
   @Override
