@@ -42,8 +42,8 @@ public class ThumbnailInitializer implements ResourceInitializer, PreInitializer
   private void init(ResourceDomain resource) {
     var service = factory.getService(resource.getType());
     if(service.isPresent()) {
-      service.get().generate(resource);
       resource.getAttributes().put("thumbnailUrl", thumbnailUrl(resource.getPath()));
+      service.get().generate(resource);
     } else {
       log.warn("Thumbnail service not found for file {} with type {}", resource.getPath(), resource.getType());
     }
