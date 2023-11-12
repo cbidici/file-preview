@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Order(3)
 @RequiredArgsConstructor
 @Slf4j
-public class PreviewInitializer implements ResourceInitializer, PreInitializer {
+public class PreviewInitializer implements ResourceInitializer {
 
   private final PreviewServiceFactory factory;
   private final TaskExecutor executor;
@@ -37,10 +37,5 @@ public class PreviewInitializer implements ResourceInitializer, PreInitializer {
 
   private String previewUrl(String path) {
     return Path.of("/").resolve(AppConfig.PREVIEWS).resolve(path).toString();
-  }
-
-  @Override
-  public void preInit(List<ResourceDomain> resources) {
-    init(resources);
   }
 }

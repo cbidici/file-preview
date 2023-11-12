@@ -12,18 +12,16 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Order(2)
 @Slf4j
-public class ThumbnailInitializer implements ResourceInitializer, PreInitializer{
+public class ThumbnailInitializer implements ResourceInitializer{
 
   private final AppConfig appConfig;
   private final ThumbnailServiceFactory factory;
-  private final TaskExecutor executor;
 
   @Override
   public void init(List<ResourceDomain> resources) {
@@ -51,11 +49,5 @@ public class ThumbnailInitializer implements ResourceInitializer, PreInitializer
 
   private String thumbnailUrl(String path) {
     return Path.of("/").resolve(AppConfig.THUMBNAILS).resolve(path).toString();
-  }
-
-  @Override
-  public void preInit(List<ResourceDomain> resources) {
-    resources.forEach(resource -> resource.getAttributes().put("thumbnailUrl", thumbnailUrl(resource.getPath())));
-    resources.forEach(resource -> executor.execute(() -> init(resource)));
   }
 }

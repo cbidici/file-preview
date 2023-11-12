@@ -3,6 +3,7 @@ package com.cbidici.filepreviewer.service;
 import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.exception.DirectoryNotFoundException;
 import com.cbidici.filepreviewer.exception.FileNotFoundException;
+import com.cbidici.filepreviewer.exception.MultimediaServiceBusinessException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +53,19 @@ public class FileService {
     return Arrays.stream(Objects.requireNonNull(directory.listFiles()))
         .filter(Predicate.not(File::isHidden))
         .toList();
+  }
+
+  public String getFileTypeName(File file) {
+    try {
+      String fileTypeName = Files.probeContentType(file.toPath());
+      if(null == fileTypeName) {
+        fileTypeName = new Tika().detect(file);
+      }
+      return fileTypeName;
+    } catch (IOException e) {
+      log.error("Failed to read type of resource {}", file.getPath(), e);
+      throw new MultimediaServiceBusinessException(e);
+    }
   }
 
   private boolean isValidPath(Path path) {
