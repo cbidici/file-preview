@@ -1,36 +1,40 @@
-.image{
-    position:relative;
-    overflow:hidden;
-    padding-bottom:100%;
+.fill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
 }
-.image img{
-    position: absolute;
-    max-width: 100%;
-    max-height: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
+.fill img {
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%
+}
+
+.fill button {
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%
 }
 
 .img_container {
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
 }
 
 .name_container {
-    width: 200px;
+    width: 160px;
     word-break: break-all;
     padding: 0.2rem 0.2rem 1rem 0.2rem;
 }
 
 @media only screen and (max-width: 800px) {
     .img_container {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
     }
 
     .name_container {
-        width: 150px;
+        width: 120px;
         word-break: break-all;
         padding: 0.2rem 0.2rem 1rem 0.2rem;
     }

@@ -266,7 +266,7 @@ function Gallery({path, setPath}) {
         <BreadCrumb path={path} setPath={setPathClearResources} />
         <div className="album py-5 bg-light">
           <div className="container-fluid">
-            <div className="row row-cols-auto">
+            <div className="row row-cols-auto g-1">
               {thumbnails}
               {!isLoading && <div ref={observerTarget}></div>}
             </div>
