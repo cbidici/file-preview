@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -40,6 +41,7 @@ public class FileService {
     return Optional.of(file);
   }
 
+  @Cacheable(cacheNames = {"fileCache"}, key = "#path")
   public List<File> getChildren(String path) {
     File directory = Path.of(path).toFile();
 
