@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cbidici</groupId>
-	<artifactId>multimedia-service</artifactId>
+	<artifactId>file-preview-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>multimedia-service</name>
-	<description>Premature multimedia service for home usage to serve media files from storage.</description>
+	<name>file-preview-service</name>
+	<description>Premature file preview service for home usage to serve files from storage.</description>
 	<properties>
 		<java.version>17</java.version>
 		<frontend-src-dir>${project.basedir}/src/main/js</frontend-src-dir>
@@ -58,7 +58,6 @@
 			<artifactId>tika-core</artifactId>
 			<version>2.9.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
