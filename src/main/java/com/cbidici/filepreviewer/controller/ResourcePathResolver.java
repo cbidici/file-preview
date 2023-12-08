@@ -3,6 +3,7 @@ package com.cbidici.filepreviewer.controller;
 import com.cbidici.filepreviewer.config.AppConfig;
 import com.cbidici.filepreviewer.service.ResourceService;
 import com.cbidici.filepreviewer.service.priview.PreviewServiceFactory;
+import com.cbidici.filepreviewer.service.thumbnail.ThumbnailServiceFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.resource.ResourceResolverChain;
 @Component
 @RequiredArgsConstructor
 public class ResourcePathResolver extends PathResourceResolver {
+  private final ThumbnailServiceFactory thumbnailServiceFactory;
   private final PreviewServiceFactory previewServiceFactory;
   private final ResourceService resourceService;
 
@@ -38,10 +40,14 @@ public class ResourcePathResolver extends PathResourceResolver {
   }
 
   private String getResourcePath(String type, String path) {
+    var resource = resourceService.getResource(path);
     if(type.equals("thumbnails")) {
-      return path + ".jpg";
+      var thumbnailService = thumbnailServiceFactory.getService(resource.getType());
+      if(thumbnailService.isPresent()) {
+        thumbnailService.get().generate(resource);
+        return path + ".jpg";
+      }
     } else if(type.equals("previews")) {
-      var resource = resourceService.getResource(path);
       var previewService = previewServiceFactory.getService(resource.getType());
       if(previewService.isPresent()) {
         previewService.get().generate(resource);

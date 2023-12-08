@@ -107,7 +107,7 @@ function Preview({previewResource, setPreviewResource, index}) {
             {isPreviewLoading &&
               <div style={{width:"100%", height:"100%"}}>
                 <div style={{top:"50%", left:"50%", position:"absolute"}}>
-                  <div className="spinner-border text-light" role="status" style={{width:"5rem", height:"5rem"}}>
+                  <div className="spinner-border text-light" role="status" style={{width:"5rem", height:"5rem", marginTop:"-2.5rem", marginLeft:"-2.5rem"}}>
                     <span className="sr-only"></span>
                   </div>
                 </div>
