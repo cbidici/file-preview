@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "app.file-preview-service")
+@ConfigurationProperties(prefix = "app.file-preview")
 @Data
 public class AppConfig {
 
@@ -16,6 +16,5 @@ public class AppConfig {
     private String filesPath;
     private String systemFilesPath;
     private int thumbnailsWidth;
-    private int thumbnailsThreadPoolSize;
     private int previewsWidth;
 }

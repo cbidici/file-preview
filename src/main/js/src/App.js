@@ -73,10 +73,10 @@ function Preview({previewResource, setPreviewResource, index}) {
 
   let preview;
   if(previewResource.type === "IMAGE") {
-    preview = <img display={isPreviewLoading ? "none" : "block"} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} onLoad={onImageLoad} onError={onImageLoad} />
+    preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} onLoad={onImageLoad} onError={onImageLoad} />
   } else if(previewResource.type === "VIDEO") {
     preview =
-      <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad}>
+      <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad} playsInline webkit-playsInline>
         <source src={previewResource.url} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
