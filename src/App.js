@@ -72,12 +72,12 @@ function Preview({previewResource, setPreviewResource, index}) {
   }
 
   let preview;
-  if(previewResource.type === "IMAGE") {
-    preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={previewResource.previewUrl} onLoad={onImageLoad} onError={onImageLoad} />
-  } else if(previewResource.type === "VIDEO") {
+  if(previewResource.type.startsWith("IMAGE")) {
+    preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={'/previews/'+previewResource.id} onLoad={onImageLoad} onError={onImageLoad} />
+  } else if(previewResource.type.startsWith("VIDEO")) {
     preview =
       <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad} playsInline webkit-playsInline>
-        <source src={previewResource.url} type="video/mp4" />
+        <source src={'/previews/'+previewResource.id} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
   }
@@ -170,9 +170,9 @@ function Gallery({path, setPath}) {
     else {
       fetchData(path, page)
         .then(res => {
-          if(res.resources.length > 0) {
+          if(res.length > 0) {
             setPage({...page, offset:page.offset+page.size});
-            setResources(prevResources => [...prevResources, ...res.resources]);
+            setResources(prevResources => [...prevResources, ...res]);
             setIndex(index);
           } else {
             setIndex(null);
@@ -198,7 +198,7 @@ function Gallery({path, setPath}) {
     }
 
     try {
-      return await fetch('/api/v1/resources'+fetchPath+'?offset='+fetchPage.offset+'&size='+fetchPage.size, { signal })
+      return await fetch('/api/v1/files'+fetchPath+'?offset='+fetchPage.offset+'&size='+fetchPage.size, { signal })
         .then(res => res.json())
         .then((data) => {
           return data;
@@ -220,9 +220,9 @@ function Gallery({path, setPath}) {
         if (entries[0].isIntersecting) {
           let fetchedResources = fetchData(path, page, signal);
           fetchedResources.then(res => {
-            if(res && res.resources.length > 0) {
+            if(res && res.length > 0) {
               setPage({...page, offset:page.offset+page.size});
-              setResources(prevResources => [...prevResources, ...res.resources]);
+              setResources(prevResources => [...prevResources, ...res]);
             }
           });
         }
