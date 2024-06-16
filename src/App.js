@@ -73,11 +73,11 @@ function Preview({previewResource, setPreviewResource, index}) {
 
   let preview;
   if(previewResource.type.startsWith("IMAGE")) {
-    preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={'/previews/'+previewResource.id} onLoad={onImageLoad} onError={onImageLoad} />
+    preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={process.env.REACT_APP_FILE_SERVICE_HOST+'/previews/'+previewResource.id} onLoad={onImageLoad} onError={onImageLoad} />
   } else if(previewResource.type.startsWith("VIDEO")) {
     preview =
       <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad} playsInline webkit-playsInline>
-        <source src={'/previews/'+previewResource.id} type="video/mp4" />
+        <source src={process.env.REACT_APP_FILE_SERVICE_HOST+'/previews/'+previewResource.id} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
   }
@@ -198,7 +198,7 @@ function Gallery({path, setPath}) {
     }
 
     try {
-      return await fetch('/api/v1/files'+fetchPath+'?offset='+fetchPage.offset+'&size='+fetchPage.size, { signal })
+      return await fetch(process.env.REACT_APP_FILE_SERVICE_HOST+'/api/v1/files'+fetchPath+'?offset='+fetchPage.offset+'&size='+fetchPage.size, { signal })
         .then(res => res.json())
         .then((data) => {
           return data;
