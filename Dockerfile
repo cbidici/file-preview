@@ -14,6 +14,6 @@ RUN rm -rf ./*
 COPY --from=builder /app/build .
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
-# docker build -t cbidici/file-preview .
+# docker build . -t cbidici/file-preview --no-cache --network=host
 # docker run --restart always -p 80:80  --detach cbidici/file-preview
 
