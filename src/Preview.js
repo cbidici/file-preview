@@ -70,7 +70,7 @@ function Preview({previewResource, setPreviewResource, index}) {
       preview = <img hidden={isPreviewLoading} className="image_big" alt="" style={{pointerEvents: 'auto'}} src={process.env.REACT_APP_FILE_SERVICE_HOST+'/previews/'+previewResource.id} onLoad={onImageLoad} onError={onImageLoad} />
     } else if(previewResource.type.startsWith("VIDEO")) {
       preview =
-        <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" width="100%" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad} playsInline webkit-playsInline>
+        <video display={isPreviewLoading ? "none" : "block"} ref={videoRef} id="" height="100%" style={{backgroundColor:"#f8f9fa", pointerEvents: 'auto'}} controls autoPlay onCanPlay={onImageLoad} onEmptied={onImageLoad} playsInline webkit-playsInline>
           <source src={process.env.REACT_APP_FILE_SERVICE_HOST+'/previews/'+previewResource.id} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
