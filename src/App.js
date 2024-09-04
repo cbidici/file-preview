@@ -1,18 +1,23 @@
-import {useState} from 'react';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
-import Gallery from './Gallery';
-require('bootstrap');
-
+import Header from './Header';
+import Footer from './Footer';
+import { Route, Routes } from 'react-router-dom';
+import Browser from './pages/Browser';
 
 function App() {
-  const [currentPath, setCurrentPath] = useState("");
-  const setAndLogPath = (path) => {
-    setCurrentPath(path);
-  };
 
-  return (<Gallery path={currentPath} setPath={setAndLogPath} />);
+  return (
+    <>
+      <Header />
+      <main>
+        <Routes>
+          <Route path='/categories' element={<div>categories</div>} />
+          <Route path='/*' element={<Browser/>} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
+  );
 }
 
 export default App;
