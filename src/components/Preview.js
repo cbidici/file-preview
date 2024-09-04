@@ -11,10 +11,12 @@ function Preview({fileId, path}) {
     const [file, setFile] = useState(null);
 
     useEffect(() => {
-        if(file == null || fileId !== file.id) {
-            getFile(fileId).then(data => setFile(data));
-        }
-    }, [fileId, file]);
+      getFile(fileId).then(data => setFile(data));
+    }, [fileId]);
+
+    useEffect(() => {
+      videoRef.current?.load();
+    }, [file]);
 
     const dismissPreview = function() {
         navigate(path);
