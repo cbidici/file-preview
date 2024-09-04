@@ -1,0 +1,33 @@
+a:link {
+  color: #212529;
+}
+
+/* visited link */
+a:visited {
+  color: #212529;
+}
+
+/* mouse over link */
+a:hover {
+  color: #4e4e4e;
+}
+
+button {
+  border: 0px;
+  background-color: unset;
+  padding: 0px;
+  margin: 0px;
+  color: #212529 !important;
+}
+
+button:hover {
+  color: #4e4e4e !important;
+}
+
+button:active {
+  color: #212529 !important;
+}
+
+button:visited {
+  color: #212529 !important;
+}
